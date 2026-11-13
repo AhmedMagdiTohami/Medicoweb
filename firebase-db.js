@@ -14,13 +14,17 @@ const firebaseConfig = {
     measurementId: "G-4R6BE0X1G8"
 };
 
-// Initialize Firebase if not already initialized
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+// Initialize Firebase safely if not already initialized
+if (typeof firebase !== 'undefined' && firebase.apps && !firebase.apps.length) {
+    try {
+        firebase.initializeApp(firebaseConfig);
+    } catch (e) {
+        console.warn('Firebase init error:', e);
+    }
 }
 
-const db = firebase.firestore();
-const storage = firebase.storage();
+const db = (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') ? firebase.firestore() : null;
+const storage = (typeof firebase !== 'undefined' && typeof firebase.storage === 'function') ? firebase.storage() : null;
 const OWNER_EMAIL = 'drahmedmagdieltohami@gmail.com';
 
 /**

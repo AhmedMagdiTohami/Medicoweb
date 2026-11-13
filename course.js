@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MEDICO - Course Page JavaScript
  * course.js
  *
@@ -24,148 +24,102 @@ const OWNER_EMAIL        = 'drahmedmagdieltohami@gmail.com';
 // ==========================================
 const COURSES_DB = [
     {
-        id: 'anatomy',
-        name: 'علم التشريح ووظائف الأعضاء',
-        badge: 'أساسي',
-        price: 150,
-        duration: '6 أسابيع',
-        image: 'assets/images/course_anatomy.png',
-        desc: 'شرح تفصيلي لتراكيب أعضاء جسم الإنسان ووظائف الأجهزة الحيوية المختلفة بأحدث الصور والوسائل البصرية المساعدة.',
-        fullDesc: `
-            <p>كورس علم التشريح ووظائف الأعضاء هو المدخل الأساسي لكل طالب طب يسعى لبناء أساس علمي متين. في هذا الكورس ستتعرف على:</p>
-            <p>• تراكيب جسم الإنسان من الخلية حتى الأعضاء الكاملة بطريقة مبسطة ومصورة</p>
-            <p>• وظائف كل جهاز من أجهزة الجسم (الدوري، التنفسي، الهضمي، العصبي، وغيرها)</p>
-            <p>• الربط بين التشريح والتطبيقات الكلينيكية اليومية</p>
-            <p>• مراجعات دورية وأسئلة تفاعلية لتثبيت المعلومات</p>
-        `
-    },
-    {
-        id: 'pharmacology',
-        name: 'علم الأدوية والعلاجات (Pharmacology)',
-        badge: 'كلينيكال',
-        price: 150,
-        duration: '8 أسابيع',
-        image: 'assets/images/course_pharmacology.png',
-        desc: 'دراسة آليات عمل المجموعات الدوائية والتأثيرات العلاجية والجانبية مع التركيز على الاستخدام الإكلينيكي.',
-        fullDesc: `
-            <p>كورس الفارماكولوجي يغطي كل ما تحتاجه لفهم علم الأدوية وطريقة عملها في الجسم:</p>
-            <p>• آليات عمل أهم المجموعات الدوائية وتصنيفاتها</p>
-            <p>• التأثيرات العلاجية والآثار الجانبية وكيفية تجنبها</p>
-            <p>• الجرعات المعتمدة والتفاعلات الدوائية الشائعة</p>
-            <p>• الوصفات الطبية الكلينيكية وطريقة كتابتها بشكل صحيح</p>
-        `
-    },
-    {
-        id: 'internal-medicine',
-        name: 'أساسيات الطب الباطني',
-        badge: 'متقدم',
-        price: 150,
-        duration: '10 أسابيع',
-        image: 'assets/images/course_internal_medicine.png',
-        desc: 'مدخل شامل لتشخيص وفحص الأمراض الباطنية الشائعة مثل السكري وارتفاع الضغط واختلال الغدد الصماء.',
-        fullDesc: `
-            <p>كورس الطب الباطني يُعدّك للتعامل مع أكثر الأمراض شيوعاً في الممارسة اليومية:</p>
-            <p>• تشخيص وعلاج مرض السكري وأنواعه وتعقيداته</p>
-            <p>• ارتفاع ضغط الدم والبروتوكولات العلاجية الحديثة</p>
-            <p>• أمراض الغدة الدرقية والغدد الصماء</p>
-            <p>• الفحص الكلينيكي الصحيح وكيفية كتابة التقرير الطبي</p>
-        `
-    },
-    {
-        id: 'emergency',
-        name: 'طب الطوارئ والإسعافات الأولية',
-        badge: 'عملي',
-        price: 150,
-        duration: '5 أسابيع',
-        image: 'assets/images/course_emergency.png',
-        desc: 'دليل تدريبي تطبيقي للتعامل مع الحالات الحرجة والحوادث، الإنعاش القلبي الرئوي، ووقف النزيف.',
-        fullDesc: `
-            <p>كورس الطوارئ يُعلمك المهارات الحيوية التي قد تُنقذ حياة:</p>
-            <p>• الإنعاش القلبي الرئوي CPR بالمعايير الدولية</p>
-            <p>• التعامل مع النزيف والكسور والحروق بشكل صحيح</p>
-            <p>• الحالات الحرجة: الصدمة، الاختناق، السكتة الدماغية</p>
-            <p>• تريّاج المرضى وترتيب أولويات الإسعاف</p>
-        `
-    },
-    {
-        id: 'biochemistry',
-        name: 'الكيمياء الحيوية الطبية',
-        badge: 'أكاديمي',
-        price: 150,
-        duration: '7 أسابيع',
-        image: 'assets/images/course_biochemistry.png',
-        desc: 'شرح تفاعلي للأيض ومسارات السكريات والبروتينات والدهون في الجسم مع ربطها بالأمراض الوراثية.',
-        fullDesc: `
-            <p>كورس الكيمياء الحيوية يكشف لك ما يحدث داخل خلايا الجسم على المستوى الجزيئي:</p>
-            <p>• أيض الكربوهيدرات: الجلايكوليسيس، دورة كريبس، الفسفرة التأكسدية</p>
-            <p>• أيض البروتينات والأحماض الأمينية وعلاقتها بالأمراض</p>
-            <p>• الدهون والكوليسترول وأثرها على الصحة</p>
-            <p>• الأنزيمات وكيفية تفسير نتائج التحاليل المعملية</p>
-        `
-    },
-    {
-        id: 'pathology',
-        name: 'علم الأمراض العام (Pathology)',
-        badge: 'أساسي',
-        price: 150,
-        duration: '8 أسابيع',
-        image: 'assets/images/course_pathology.png',
-        desc: 'فهم الأسباب والآليات المرضية وراء التغيرات النسيجية والخلوية والالتهابات والأورام الخبيثة.',
-        fullDesc: `
-            <p>كورس علم الأمراض يُفسّر لك لماذا تحدث الأمراض على المستوى الخلوي والنسيجي:</p>
-            <p>• آليات إصابة الخلية والموت الخلوي (Necrosis, Apoptosis)</p>
-            <p>• الالتهاب الحاد والمزمن وآليات الشفاء</p>
-            <p>• الأورام: الحميدة والخبيثة، أسباب السرطان وانتشاره</p>
-            <p>• كيفية قراءة تقرير الباثولوجي وربطه بالتشخيص الكلينيكي</p>
-        `
-    },
-    {
-        id: 'pediatrics',
-        name: 'مبادئ طب الأطفال الرعاية المتكاملة',
-        badge: 'كلينيكال',
-        price: 150,
-        duration: '6 أسابيع',
-        image: 'assets/images/course_pediatrics.svg',
-        desc: 'النمو والتطور لدى الرضع والأطفال، التطعيمات الأساسية، علاج النزلات المعوية والأمراض التنفسية الشائعة.',
-        fullDesc: `
-            <p>كورس طب الأطفال يُعلمك أساسيات رعاية الأطفال من الولادة حتى المراهقة:</p>
-            <p>• مراحل النمو والتطور الطبيعية ومؤشرات القلق</p>
-            <p>• جدول التطعيمات الوطني والدولي وأهميته</p>
-            <p>• الأمراض الشائعة عند الأطفال وطرق علاجها</p>
-            <p>• الإسهال والتجفيف عند الرضع والتدخل الصحيح</p>
-        `
-    },
-    {
-        id: 'surgery-skills',
-        name: 'الجراحة والمهارات الكلينيكية',
-        badge: 'متقدم',
-        price: 150,
-        duration: '9 أسابيع',
-        image: 'assets/images/course_surgery_skills.svg',
-        desc: 'شرح المهارات الجراحية الأساسية، خياطة الجروح، معايير التعقيم بغرف العمليات.',
-        fullDesc: `
-            <p>كورس المهارات الجراحية يُعدّك للعمل في بيئة جراحية احترافية:</p>
-            <p>• معايير التعقيم وإجراءات السلامة في غرفة العمليات</p>
-            <p>• تقنيات خياطة الجروح وأنواع الغرز المختلفة</p>
-            <p>• قراءة الفحوصات والأشعة المستخدمة في الجراحة</p>
-            <p>• الإجراءات الجراحية البسيطة وكيفية تنفيذها بأمان</p>
-        `
-    },
-    {
         id: 'general-surgery',
-        name: 'مادة الجراحة العامة',
-        badge: 'متخصص',
+        name: 'مادة الجراحة العامة (General Surgery)',
+        badge: 'سريري متقدم',
         price: 150,
         duration: '10 أسابيع',
         image: 'assets/images/course_general_surgery.svg',
-        desc: 'تغطية شاملة لمبادئ الجراحة العامة، المهارات الجراحية الأساسية، خياطة الجروح، ومعايير التعقيم.',
-        fullDesc: `
-            <p>كورس الجراحة العامة هو التغطية الأشمل لكل ما يخص الجراحة:</p>
-            <p>• مبادئ الجراحة وأخلاقياتها والتوثيق الجراحي</p>
-            <p>• جراحات البطن الشائعة (الزائدة، المرارة، الفتق)</p>
-            <p>• التعامل مع الإصابات والصدمات الجراحية</p>
-            <p>• ما بعد الجراحة: الرعاية ومتابعة المرضى</p>
-        `
+        desc: 'شرح تفصيلي متكامل لمنهج الجراحة العامة: حالات البطن الحادة (Acute Abdomen)، الفتق، أورام الثدي والغدة الدرقية، وجراحة الجهاز الهضمي والمهارات الجراحية التأسيسية.',
+        fullDesc: 
+            <div class="course-full-description">
+                <h4>🎯 نبذة عن الكورس</h4>
+                <p>يُعد كورس الجراحة العامة من أهم الأعمدة في مسيرة طالب الطب وطبيب الامتياز. يقدم الكورس شرحاً أكاديمياً وسريرياً مبسطاً لأهم الحالات الجراحية الشائعة وطرق التقييم السريري، اتخاذ القرار الجراحي، والتعامل مع المضاعفات بدقة واحترافية.</p>
+
+                <h4>📚 ماذا ستتعلم في هذا الكورس؟</h4>
+                <ul>
+                    <li><strong>حالات البطن الحادة (Acute Abdomen):</strong> التشخيص السريري والتفريقي لالتهاب الزائدة الدودية، انسداد الأمعاء، والتهاب المرارة والبنكرياس.</li>
+                    <li><strong>جراحات الفتق بأنواعه (Hernias):</strong> الفتق الإربي، الفخذي، السري، وتقنيات الإصلاح الجراحي واستخدام الشبكة الجراحية.</li>
+                    <li><strong>جراحة الثدي والغدد الصماء (Breast & Endocrine Surgery):</strong> تقييم كتل الثدي، أورام الغدة الدرقية، واستئصالها ومعايير الأمان.</li>
+                    <li><strong>جراحة الجهاز الهضمي والقولون:</strong> قرحة المعدة والنزيف الهضمي، أورام القولون، والبواسير والشرخ الشرجي.</li>
+                    <li><strong>المهارات الجراحية التأسيسية:</strong> التعقيم الجراحي داخل العمليات، اختيار واستخدام الأدوات الجراحية، وأنواع الغرز والخياطة.</li>
+                </ul>
+
+                <h4>🩺 التطبيقات الكلينيكية</h4>
+                <p>كيفية أخذ التاريخ المرضي الجراحي، الفحص الإكلينيكي لبطن المريض، قراءة الأشعة السينية والمقطعية للحالات الجراحية، والرعاية الطبية الشاملة قبل وبعد العمليات (Pre & Post-operative care).</p>
+
+                <h4>👥 لمن هذا الكورس؟</h4>
+                <p>طلاب السنوات الإكلينيكية بكليات الطب البشري، أطباء الامتياز، ونواب الجراحة المبتدئين الراغبين في بناء أساس جراحي متين.</p>
+
+                <h4>🎁 مميزات الاشتراك</h4>
+                <p>• محاضرات فيديو تفاعلية مع د. أحمد مجدي • مذكرات وملخصات PDF جاهزة للتحميل • سيناريوهات جراحية واقعية • شهادة إتمام معتمدة.</p>
+            </div>
+        
+    },
+    {
+        id: 'pediatrics',
+        name: 'مبادئ طب الأطفال والرعاية المتكاملة (Pediatrics)',
+        badge: 'كلينيكال',
+        price: 150,
+        duration: '8 أسابيع',
+        image: 'assets/images/course_pediatrics.svg',
+        desc: 'منهجية إكلينيكية شاملة لتشخيص وعلاج أمراض الأطفال وحديثي الولادة: تقييم النمو والتطور، التطعيمات، خطط علاج الجفاف، وأمراض الصدر والصفراء الوليدية.',
+        fullDesc: 
+            <div class="course-full-description">
+                <h4>🎯 نبذة عن الكورس</h4>
+                <p>كورس طب الأطفال يهدف إلى تزويدك بالمهارات الإكلينيكية اللازمة للتعامل مع الطفل في مختلف المراحل العمرية (من حديثي الولادة وحتى سن المراهقة)، مع التركيز على التشخيص السريع والعلاج الآمن وحساب الجرعات بدقة بناءً على الأدلة الطبية الحديثة.</p>
+
+                <h4>📚 ماذا ستتعلم في هذا الكورس؟</h4>
+                <ul>
+                    <li><strong>النمو والتطور والتغذية (Growth & Development):</strong> متابعة منحنيات النمو، محطات التطور الحركي والعقلي، ومبادئ الرضاعة الطبيعية والتغذية التكميلية.</li>
+                    <li><strong>طب حديثي الولادة (Neonatology):</strong> التعامل مع الصفراء الوليدية (Jaundice)، صعوبة التنفس لدى المواليد (RDS)، والعدوى الوليدية.</li>
+                    <li><strong>أمراض الجهاز التنفسي:</strong> التهاب الشعب الهوائية، الحساسية الصدرية (Asthma)، والالتهاب الرئوي عند الأطفال.</li>
+                    <li><strong>أمراض الجهاز الهضمي والنزلات المعوية:</strong> خطط علاج الجفاف الثلاثة (Plans A, B, C) المعتمدة من منظمة الصحة العالمية (WHO) وحساب محاليل الجفاف والوريد بدقة.</li>
+                    <li><strong>جدول التطعيمات الإلزامية والإضافية:</strong> مواعيد اللقاحات وموانع الاستخدام وكيفية توعية الأمهات.</li>
+                </ul>
+
+                <h4>🩺 التطبيقات الكلينيكية</h4>
+                <p>فحص الطفل الرضيع دون إثارة بكائه، حساب جرعات أدوية الأطفال بدقة بناءً على الوزن، والتعرف المبكر على علامات الخطر الحرجة للتحويل الفوري للعناية المركزة.</p>
+
+                <h4>👥 لمن هذا الكورس؟</h4>
+                <p>طلاب كليات الطب والتمريض، أطباء الامتياز، وممارسو الرعاية الصحية الأولية في وحدات ومستشفيات الأطفال.</p>
+
+                <h4>🎁 مميزات الاشتراك</h4>
+                <p>• جداول حساب الجرعات السريعة (Pocket Charts) • سيناريوهات لحالات واقعية مع د. أحمد مجدي • ملفات ومذكرات للمراجعة • شهادة إتمام معتمدة.</p>
+            </div>
+        
+    },
+    {
+        id: 'histology',
+        name: 'علم الأنسجة وبيولوجيا الخلية (Medical Histology)',
+        badge: 'أكاديمي أساسي',
+        price: 150,
+        duration: '6 أسابيع',
+        image: 'assets/images/course_histology.svg',
+        desc: 'دراسة مجهرية تفاعلية دقيقة لخلايا وأنسجة أجهزة جسم الإنسان الأساسية الأربعة (الطلائية، الضامة، العضلية، العصبية) مع قراءة وفهم الشرائح المجهرية والصبغات النسيجية.',
+        fullDesc: 
+            <div class="course-full-description">
+                <h4>🎯 نبذة عن الكورس</h4>
+                <p>علم الأنسجة (Histology) هو النافذة المجهرية التي تكشف البنية الحقيقية لأعضاء جسم الإنسان. يهدف الكورس إلى تحويل دراسة الشرائح المجهرية من مجرد حفظ صور إلى فهم عميق لوظيفة كل خلية ونسيج، مما يمهد لفهم سليم للباثولوجي والفسيولوجي.</p>
+
+                <h4>📚 ماذا ستتعلم في هذا الكورس؟</h4>
+                <ul>
+                    <li><strong>الأنسجة الأساسية الأربعة (General Histology):</strong> دراسة مفصلة للنسيج الطلائي (Epithelium)، النسيج الضام (Connective Tissue)، النسيج العضلي (Muscle Tissue)، والنسيج العصبي (Nervous Tissue).</li>
+                    <li><strong>هستولوجي الأجهزة (Systemic Histology):</strong> التركيب المجهري للقلب والأوعية الدموية، الجهاز التنفسي، الجهاز الهضمي والكبد والبنكرياس، الجهاز البولي والكلية، والغدد الصماء.</li>
+                    <li><strong>تقنيات الصبغة والمجهر:</strong> صبغة الهيماتوكسيلين والإيوسين (H&E)، الصبغات الخاصة، وكيفية قراءة الشرائح تحت المجهر الضوئي والإلكتروني.</li>
+                    <li><strong>بيولوجيا الخلية المتقدمة (Cell Biology):</strong> العضيات الخلوية، الغشاء البلازمي، النواة وانقسام الخلية وعلاقتها بالأورام.</li>
+                </ul>
+
+                <h4>🩺 التطبيقات الكلينيكية</h4>
+                <p>كيف تفرق بين النسيج الطبيعي والنسيج المتليف أو السرطاني، فهم أصل الأورام النسيجي (Histogenesis)، وتفسير تقارير الخزعات النسيجية (Biopsy Reports).</p>
+
+                <h4>👥 لمن هذا الكورس؟</h4>
+                <p>طلاب السنوات التأسيسية بكليات الطب البشري، طب الأسنان، الصيدلة، العلوم الطبية، ومختبرات التحاليل الطبية.</p>
+
+                <h4>🎁 مميزات الاشتراك</h4>
+                <p>• أطلس شرائح مجهرية تفاعلي عالي الدقة (HD Virtual Slides) • مذكرات ملونة للمراجعة السريعة قبل الامتحانات • بنك أسئلة بنظام MCQ العملي • شهادة إتمام معتمدة.</p>
+            </div>
+        
     }
 ];
 
@@ -221,14 +175,20 @@ function setButtonLoading(btn, isLoading) {
 // ==========================================
 // MAIN INIT
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
+function initCourseApp() {
 
     // ── Init EmailJS ───────────────────────────────
-    emailjs.init(EMAILJS_PUBLIC_KEY);
+    try {
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+    } catch (e) {
+        console.warn('EmailJS init skipped:', e);
+    }
 
     // ── Get courseId from URL ──────────────────────
     const params   = new URLSearchParams(window.location.search);
-    const courseId = params.get('id') || 'anatomy';
+    const courseId = params.get('id') || 'general-surgery';
     const course   = COURSES_DB.find(c => c.id === courseId) || COURSES_DB[0];
 
     // ── Lessons storage key ────────────────────────
@@ -238,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Populate Course Meta in Hero Section
     // ==========================================
     document.title = `MEDICO - ${course.name}`;
-    document.querySelector('meta[name="description"]').content = course.desc;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.content = course.desc;
 
     setEl('breadcrumbCourse', course.name);
     setEl('courseTitle', course.name);
@@ -251,6 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Enrollment sidebar
     setEl('enrollCourseName', course.name, 'value');
     setEl('enrollPrice', course.price);
+    setEl('enrollCourseTitleDisplay', course.name);
+    setEl('enrollCourseDescDisplay', course.desc);
+    setEl('enrollBtnText', `تأكيد حجز ${course.name} (${course.price} EGP)`);
+    setEl('paymentCourseName', course.name);
+    setEl('paymentCoursePrice', course.price);
 
     const thumbImg = document.getElementById('enrollThumbImg');
     if (thumbImg) {
@@ -831,51 +797,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Default lessons mapped by courseId
         const defaultDriveUrl = 'https://drive.google.com/file/d/1t3X8ZfI_G_J5f2U4G4A9P0y7F1Z3-Q4e/view';
-        const defaults = {
-            'anatomy': [
-                { id: 'anatomy_1', title: 'المقدمة والتمهيد لعلم التشريح ووظائف الأعضاء', driveUrl: defaultDriveUrl, duration: '15 دقيقة', access: 'free' },
-                { id: 'anatomy_2', title: 'المحاضرة الأولى - مصطلحات التشريح والمستويات التشريحية', driveUrl: defaultDriveUrl, duration: '45 دقيقة', access: 'paid' },
-                { id: 'anatomy_3', title: 'المحاضرة الثانية - بنية الخلية والأنسجة الأساسية', driveUrl: defaultDriveUrl, duration: '60 دقيقة', access: 'paid' }
-            ],
-            'pharmacology': [
-                { id: 'pharm_1', title: 'مقدمة في علم الأدوية والمصطلحات الدوائية', driveUrl: defaultDriveUrl, duration: '20 دقيقة', access: 'free' },
-                { id: 'pharm_2', title: 'المحاضرة الأولى - امتصاص وتوزيع الدواء (Pharmacokinetics)', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' },
-                { id: 'pharm_3', title: 'المحاضرة الثانية - آليات عمل الأدوية والمستقبلات', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' }
-            ],
-            'internal-medicine': [
-                { id: 'med_1', title: 'مقدمة في الفحص الكلينيكي وأخذ التاريخ المرضي', driveUrl: defaultDriveUrl, duration: '25 دقيقة', access: 'free' },
-                { id: 'med_2', title: 'المحاضرة الأولى - تشخيص وعلاج ارتفاع ضغط الدم الشرياني', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' },
-                { id: 'med_3', title: 'المحاضرة الثانية - اضطرابات الغدد الصماء والسكري', driveUrl: defaultDriveUrl, duration: '65 دقيقة', access: 'paid' }
-            ],
-            'emergency': [
-                { id: 'em_1', title: 'المبادئ الأساسية للإسعافات الأولية وسلسلة البقاء', driveUrl: defaultDriveUrl, duration: '15 دقيقة', access: 'free' },
-                { id: 'em_2', title: 'المحاضرة الأولى - الإنعاش القلبي الرئوي (CPR) للبالغين والأطفال', driveUrl: defaultDriveUrl, duration: '45 دقيقة', access: 'paid' },
-                { id: 'em_3', title: 'المحاضرة الثانية - التعامل مع الكسور، الحروق والجروح النازفة', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' }
-            ],
-            'biochemistry': [
-                { id: 'biochem_1', title: 'مقدمة في بنية الكربوهيدرات ووظائفها الحيوية', driveUrl: defaultDriveUrl, duration: '18 دقيقة', access: 'free' },
-                { id: 'biochem_2', title: 'المحاضرة الأولى - مسار تحلل السكر (Glycolysis) وإنتاج الطاقة', driveUrl: defaultDriveUrl, duration: '48 دقيقة', access: 'paid' },
-                { id: 'biochem_3', title: 'المحاضرة الثانية - تمثيل الدهون والكوليسترول في الدم', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' }
-            ],
-            'pathology': [
-                { id: 'path_1', title: 'مقدمة في علم الأمراض والتغيرات الخلوية', driveUrl: defaultDriveUrl, duration: '20 دقيقة', access: 'free' },
-                { id: 'path_2', title: 'المحاضرة الأولى - الالتهاب الحاد والالتهاب المزمن وآليات حدوثهما', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' },
-                { id: 'path_3', title: 'المحاضرة الثانية - الأورام الحميدة والخبيثة ومعايير التفريق بينها', driveUrl: defaultDriveUrl, duration: '60 دقيقة', access: 'paid' }
-            ],
-            'pediatrics': [
-                { id: 'ped_1', title: 'مراحل التطور والنمو الطبيعي للطفل حديث الولادة', driveUrl: defaultDriveUrl, duration: '22 دقيقة', access: 'free' },
-                { id: 'ped_2', title: 'المحاضرة الأولى - النزلات المعوية الحادة والتعامل مع الجفاف', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' },
-                { id: 'ped_3', title: 'المحاضرة الثانية - التطعيمات الأساسية وجداول اللقاحات', driveUrl: defaultDriveUrl, duration: '45 دقيقة', access: 'paid' }
-            ],
-            'surgery-skills': [
-                { id: 'surg_skills_1', title: 'أدوات الجراحة الأساسية وطريقة استخدامها الصحيحة', driveUrl: defaultDriveUrl, duration: '20 دقيقة', access: 'free' },
-                { id: 'surg_skills_2', title: 'المحاضرة الأولى - أنواع الغرز الجراحية وتقنيات خياطة الجروح', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' },
-                { id: 'surg_skills_3', title: 'المحاضرة الثانية - التعقيم الكامل داخل غرف العمليات وسلامة الجراح', driveUrl: defaultDriveUrl, duration: '45 دقيقة', access: 'paid' }
-            ],
+                const defaults = {
             'general-surgery': [
                 { id: 'gen_surg_1', title: 'مقدمة في الجراحة العامة وعلم الجراحة الإكلينيكي', driveUrl: defaultDriveUrl, duration: '25 دقيقة', access: 'free' },
                 { id: 'gen_surg_2', title: 'المحاضرة الأولى - الزائدة الدودية الحادة: التشخيص والتدخل الجراحي', driveUrl: defaultDriveUrl, duration: '60 دقيقة', access: 'paid' },
-                { id: 'gen_surg_3', title: 'المحاضرة الثانية - جراحات الفتق بأنواعه وعلاجه بالشبكة الجراحية', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' }
+                { id: 'gen_surg_3', title: 'المحاضرة الثانية - جراحات الفتق بأنواعه وعلاجه بالشبكة الجراحية', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' },
+                { id: 'gen_surg_4', title: 'المحاضرة الثالثة - تقييم كتل الثدي وجراحات الغدة الدرقية', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' }
+            ],
+            'pediatrics': [
+                { id: 'ped_1', title: 'مراحل التطور والنمو الطبيعي للطفل حديث الولادة', driveUrl: defaultDriveUrl, duration: '22 دقيقة', access: 'free' },
+                { id: 'ped_2', title: 'المحاضرة الأولى - النزلات المعوية الحادة وبروتوكولات الجفاف', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' },
+                { id: 'ped_3', title: 'المحاضرة الثانية - التطعيمات الأساسية وجداول اللقاحات', driveUrl: defaultDriveUrl, duration: '45 دقيقة', access: 'paid' },
+                { id: 'ped_4', title: 'المحاضرة الثالثة - الصفراء الوليدية وطوارئ الأطفال الشائعة', driveUrl: defaultDriveUrl, duration: '48 دقيقة', access: 'paid' }
+            ],
+            'histology': [
+                { id: 'histo_1', title: 'مقدمة في علم الأنسجة والتعامل مع الشرائح والصبغات', driveUrl: defaultDriveUrl, duration: '20 دقيقة', access: 'free' },
+                { id: 'histo_2', title: 'المحاضرة الأولى - النسيج الطلائي والغدد (Epithelial Tissue)', driveUrl: defaultDriveUrl, duration: '50 دقيقة', access: 'paid' },
+                { id: 'histo_3', title: 'المحاضرة الثانية - النسيج الضام والغضاريف والعظام (Connective Tissue)', driveUrl: defaultDriveUrl, duration: '55 دقيقة', access: 'paid' },
+                { id: 'histo_4', title: 'المحاضرة الثالثة - التركيب المجهري للجهاز الهضمي والكبد', driveUrl: defaultDriveUrl, duration: '52 دقيقة', access: 'paid' }
             ]
         };
 
@@ -921,4 +860,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g,  '&#039;');
     }
 
-}); // end DOMContentLoaded
+} // end initCourseApp
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCourseApp);
+} else {
+    initCourseApp();
+}

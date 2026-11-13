@@ -4,410 +4,1148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="صفحة تسجيل الدخول والاشتراك لمنصة MEDICO التعليمية - ابدأ رحلتك في التميز الطبي">
-    <title>تسجيل الدخول | MEDICO</title>
+    <meta name="description" content="تسجيل الدخول والاشتراك في منصة MEDICO التعليمية - بوابتك للتميز في العلوم الطبية وشروحات د. أحمد مجدي.">
+    <title>تسجيل الدخول | MEDICO للتعليم الطبي</title>
 
-    <!-- CSS Stylesheet (Shared) -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase SDK v9 compat (browser globals) -->
+    <!-- Firebase SDK v9 compat -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
     <script src="firebase-db.js"></script>
-    
-    <!-- Inline page styles for layout customization -->
+
     <style>
-        body.auth-body {
-            background-color: var(--primary);
-            background-image: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.2) 0%, transparent 45%),
-                              radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.2) 0%, transparent 45%);
+        :root {
+            --auth-bg: #070d19;
+            --auth-surface: #0f172a;
+            --auth-card: rgba(15, 23, 42, 0.75);
+            --auth-border: rgba(255, 255, 255, 0.1);
+            --auth-accent: #00b4d8;
+            --auth-accent-glow: rgba(0, 180, 216, 0.35);
+            --auth-accent-hover: #0096c7;
+            --auth-text: #f8fafc;
+            --auth-muted: #94a3b8;
+            --auth-success: #10b981;
+            --auth-danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.medico-auth-page {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: var(--auth-bg);
+            color: var(--auth-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            align-items: stretch;
+            justify-content: stretch;
+        }
+
+        /* ─── Split Screen Layout ─── */
+        .auth-split-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* ─── RIGHT COLUMN: Form Area ─── */
+        .auth-form-column {
+            flex: 1 1 520px;
+            max-width: 620px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 48px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%);
+            position: relative;
+            z-index: 2;
+            overflow-y: auto;
+        }
+
+        /* ─── LEFT COLUMN: Medical Showcase (Desktop) ─── */
+        .auth-showcase-column {
+            flex: 1 1 50%;
+            background: linear-gradient(135deg, #091428 0%, #030712 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 56px 64px;
+            overflow: hidden;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Glowing background blobs */
+        .showcase-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .showcase-blob-1 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, #00b4d8 0%, rgba(0, 180, 216, 0) 70%);
+            top: -100px;
+            left: -100px;
+        }
+
+        .showcase-blob-2 {
+            width: 460px;
+            height: 460px;
+            background: radial-gradient(circle, #0284c7 0%, rgba(2, 132, 199, 0) 70%);
+            bottom: -120px;
+            right: -80px;
+        }
+
+        .showcase-grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0);
+            background-size: 32px 32px;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .showcase-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin: auto 0;
+        }
+
+        .showcase-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(0, 180, 216, 0.12);
+            border: 1px solid rgba(0, 180, 216, 0.35);
+            border-radius: 50px;
+            color: var(--auth-accent);
+            font-size: 0.85rem;
+            font-weight: 700;
+            width: fit-content;
+            backdrop-filter: blur(8px);
+        }
+
+        .showcase-badge-pill .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--auth-accent);
+            box-shadow: 0 0 10px var(--auth-accent);
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        .showcase-headline {
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1.35;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .showcase-headline span {
+            background: linear-gradient(90deg, #00b4d8, #90e0ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .showcase-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .showcase-glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .showcase-glass-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 180, 216, 0.3);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .doctor-quote-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .doctor-avatar-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 24px;
-        }
-
-        .auth-container {
-            width: 100%;
-            max-width: 480px;
-            perspective: 1000px;
-        }
-
-        .auth-card {
-            background-color: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius-lg);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            padding: 40px;
             color: #ffffff;
-            transition: var(--transition-slow);
-            position: relative;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
         }
 
-        .auth-header {
-            text-align: center;
-            margin-bottom: 32px;
+        .doctor-quote-info h4 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
         }
 
-        .auth-logo {
-            justify-content: center;
-            margin-bottom: 24px;
-            color: #ffffff;
+        .doctor-quote-info p {
+            font-size: 0.88rem;
+            color: var(--auth-muted);
+            line-height: 1.5;
         }
 
-        .auth-title {
-            font-size: 1.8rem;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-
-        .auth-subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.95rem;
-        }
-
-        /* Tabs styling */
-        .auth-tabs {
+        .showcase-stats-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            background-color: rgba(15, 23, 42, 0.6);
-            border-radius: var(--border-radius-sm);
-            padding: 4px;
-            margin-bottom: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
         }
 
-        .auth-tab-btn {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            padding: 10px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: var(--transition-fast);
+        .stat-glass-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .stat-glass-num {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #00b4d8;
+            margin-bottom: 2px;
             font-family: var(--font-heading);
         }
 
-        .auth-tab-btn.active {
-            background-color: var(--accent);
-            color: #ffffff;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Form styling overrides for Dark Auth theme */
-        .auth-card .form-label {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .auth-card .form-input {
-            background-color: rgba(15, 23, 42, 0.5);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-
-        .auth-card .form-input:focus {
-            background-color: rgba(15, 23, 42, 0.8);
-            border-color: var(--accent);
-        }
-
-        .password-input-wrapper {
-            position: relative;
-        }
-
-        .password-toggle-btn {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-fast);
-        }
-
-        .password-toggle-btn:hover {
-            color: #ffffff;
-        }
-
-        /* Remember me & Forgot Password wrapper */
-        .form-helpers {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            font-size: 0.9rem;
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .checkbox-container input {
-            cursor: pointer;
-            accent-color: var(--accent);
-        }
-
-        .forgot-link {
-            color: var(--accent);
+        .stat-glass-label {
+            font-size: 0.8rem;
+            color: var(--auth-muted);
             font-weight: 600;
         }
 
-        .forgot-link:hover {
-            text-decoration: underline;
-            color: var(--accent-light);
+        .showcase-footer {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 20px;
         }
 
-        /* Google Login Placeholder Button */
-        .social-divider {
+        .active-students-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .active-students-pill .green-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* ─── FORM AREA STYLING ─── */
+        .auth-top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .back-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--auth-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        .back-pill-btn:hover {
+            background: rgba(0, 180, 216, 0.12);
+            border-color: rgba(0, 180, 216, 0.3);
+            color: var(--auth-accent);
+            transform: translateX(4px);
+        }
+
+        .medico-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .medico-logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .medico-logo-row:hover .medico-logo-icon {
+            transform: scale(1.05) rotate(3deg);
+        }
+
+        .medico-logo-text {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            font-family: var(--font-heading);
+        }
+
+        .medico-logo-text span {
+            color: var(--auth-accent);
+        }
+
+        .auth-title-group {
+            margin-bottom: 28px;
+        }
+
+        .auth-main-heading {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .auth-sub-heading {
+            font-size: 0.95rem;
+            color: var(--auth-muted);
+            line-height: 1.5;
+        }
+
+        /* ─── Animated Segment Tabs ─── */
+        .auth-nav-tabs {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 28px;
+            gap: 6px;
+        }
+
+        .auth-nav-tab {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--auth-muted);
+            padding: 11px 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-nav-tab.active {
+            background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.35);
+        }
+
+        .auth-nav-tab:not(.active):hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* ─── Social Login Button (Google) ─── */
+        .google-auth-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 13px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-bottom: 24px;
+        }
+
+        .google-auth-btn:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .google-auth-btn svg {
+            flex-shrink: 0;
+        }
+
+        /* ─── Separator Divider ─── */
+        .auth-divider {
             display: flex;
             align-items: center;
             text-align: center;
-            margin: 28px 0;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.35);
             font-size: 0.85rem;
+            margin-bottom: 24px;
         }
 
-        .social-divider::before,
-        .social-divider::after {
+        .auth-divider::before,
+        .auth-divider::after {
             content: '';
             flex: 1;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .social-divider:not(:empty)::before {
-            margin-left: 12px;
+        .auth-divider span {
+            padding: 0 16px;
         }
 
-        .social-divider:not(:empty)::after {
-            margin-right: 12px;
+        /* ─── Form Inputs ─── */
+        .medico-input-group {
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        .btn-google {
-            background-color: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+        .medico-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+
+        .medico-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-lead-icon {
+            position: absolute;
+            right: 16px;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .medico-text-input {
             width: 100%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-weight: 600;
+            padding: 13px 48px 13px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #ffffff;
             font-size: 0.95rem;
-            transition: var(--transition-normal);
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s ease;
         }
 
-        .btn-google:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+        .medico-text-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
         }
 
-        .btn-google svg {
-            flex-shrink: 0;
+        .medico-text-input:focus {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: var(--auth-accent);
+            box-shadow: 0 0 0 4px var(--auth-accent-glow);
         }
 
-        /* Back to main link */
-        .back-to-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 24px;
-            font-weight: 600;
-            font-size: 0.95rem;
+        .medico-text-input:focus ~ .input-lead-icon {
+            color: var(--auth-accent);
         }
 
-        .back-to-home:hover {
-            color: var(--accent);
-            transform: translateX(4px);
+        .medico-input-group.has-error .medico-text-input {
+            border-color: var(--auth-danger);
+            background: rgba(239, 68, 68, 0.05);
         }
 
-        /* Form Switch Animation Container */
-        .form-view {
-            display: none;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        .form-view.active {
+        .medico-input-group.has-error .input-error-msg {
             display: block;
         }
 
-        @media (max-width: 480px) {
-            .auth-card {
-                padding: 30px 20px;
+        .input-error-msg {
+            display: none;
+            color: #fca5a5;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Password Eye Toggle */
+        .toggle-password-btn {
+            position: absolute;
+            left: 14px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password-btn:hover {
+            color: #ffffff;
+        }
+
+        /* Password strength meter */
+        .password-strength-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .strength-weak { width: 33%; background: #ef4444; }
+        .strength-medium { width: 66%; background: #f59e0b; }
+        .strength-strong { width: 100%; background: #10b981; }
+
+        /* Helper row (Remember me & Forgot pass) */
+        .form-helper-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 0.88rem;
+        }
+
+        .custom-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.75);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-checkbox-label input {
+            accent-color: var(--auth-accent);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .forgot-pass-trigger {
+            color: var(--auth-accent);
+            text-decoration: none;
+            font-weight: 700;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-pass-trigger:hover {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
+        /* ─── Submit Buttons ─── */
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .auth-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 180, 216, 0.55);
+        }
+
+        .auth-submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ─── Inline Alert Box ─── */
+        .auth-alert-box {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: slideDownAlert 0.3s ease;
+        }
+
+        @keyframes slideDownAlert {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-alert-box.alert-error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        .auth-alert-box.alert-success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #6ee7b7;
+        }
+
+        .auth-alert-box svg {
+            flex-shrink: 0;
+        }
+
+        /* ─── Form Views Switcher ─── */
+        .auth-view-panel {
+            display: none;
+            animation: fadeInView 0.35s ease forwards;
+        }
+
+        .auth-view-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Select input styling ─── */
+        .medico-select-input {
+            width: 100%;
+            padding: 13px 48px 13px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .medico-select-input:focus {
+            border-color: var(--auth-accent);
+            box-shadow: 0 0 0 4px var(--auth-accent-glow);
+        }
+
+        .medico-select-input option {
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .select-arrow-icon {
+            position: absolute;
+            left: 16px;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+
+        /* ─── Responsive Media Queries ─── */
+        @media (max-width: 960px) {
+            .auth-showcase-column {
+                display: none;
+            }
+
+            .auth-form-column {
+                flex: 1 1 100%;
+                max-width: 100%;
+                padding: 32px 24px;
+            }
+
+            .auth-main-heading {
+                font-size: 1.6rem;
             }
         }
 
-        /* Spinner animation for loading states */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
+        @media (max-width: 480px) {
+            .auth-form-column {
+                padding: 24px 16px;
+            }
+
+            .auth-nav-tab {
+                padding: 10px 10px;
+                font-size: 0.88rem;
+            }
+
+            .auth-main-heading {
+                font-size: 1.45rem;
+            }
         }
     </style>
 </head>
 
-<body class="auth-body">
+<body class="medico-auth-page">
 
-    <div class="auth-container">
-        <!-- Back to main page link -->
-        <a href="index.html" class="back-to-home">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-            <span>العودة إلى الرئيسية</span>
-        </a>
+    <div class="auth-split-wrapper">
 
-        <!-- Premium Auth Card -->
-        <div class="auth-card">
-            <!-- Header (Logo & Title) -->
-            <div class="auth-header">
-                <a href="index.html" class="logo auth-logo" aria-label="MEDICO الصفحة الرئيسية">
-                    <span class="logo-icon">
-                        <svg width="28" height="28" viewBox="0 0 100 100" fill="currentColor">
-                            <path d="M 50,28 C 42,20 32,13 23,13 C 12,13 10,24 13,38 C 16,50 25,61 40,71 C 29,62 19,50 16,38 C 14,26 15,16 23,16 C 32,16 42,22 50,28 Z" />
-                            <path d="M 50,28 C 58,20 68,13 77,13 C 88,13 90,24 87,38 C 82,53 66,72 42,90 C 62,72 79,54 84,38 C 87,26 86,16 77,16 C 68,16 58,22 50,28 Z" />
-                        </svg>
-                    </span>
-                    <span>MEDICO</span>
+        <!-- ====================================================
+             RIGHT COLUMN: Authentication Form (Login / Register)
+             ==================================================== -->
+        <main class="auth-form-column">
+
+            <!-- Top Nav Row -->
+            <div class="auth-top-nav">
+                <a href="index.html" class="back-pill-btn" aria-label="العودة للصفحة الرئيسية">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                    <span>العودة للرئيسية</span>
                 </a>
-                <h1 class="auth-title" id="authTitle">مرحباً بك مجدداً</h1>
-                <p class="auth-subtitle" id="authSubtitle">سجل دخولك لمتابعة كورساتك الطبية الأكاديمية</p>
+
+                <div class="active-students-pill">
+                    <span class="green-dot"></span>
+                    <span>المنصة متاحة الآن</span>
+                </div>
             </div>
 
-            <!-- Custom Tabs to Switch Forms -->
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">تسجيل الدخول</button>
-                <button type="button" class="auth-tab-btn" id="tabRegisterBtn" onclick="switchTab('register')">إنشاء حساب جديد</button>
+            <!-- Brand Logo -->
+            <a href="index.html" class="medico-logo-row">
+                <div class="medico-logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <div class="medico-logo-text">MEDICO<span>.</span></div>
+            </a>
+
+            <!-- Header Titles -->
+            <div class="auth-title-group">
+                <h1 class="auth-main-heading" id="authMainTitle">مرحباً بك مجدداً دكتور 🩺</h1>
+                <p class="auth-sub-heading" id="authSubTitle">سجّل دخولك لمتابعة محاضراتك الطبية ومسارك التعليمي</p>
             </div>
 
-            <!-- LOGIN VIEW -->
-            <div class="form-view active" id="loginFormView">
-                <form id="firebaseLoginForm" novalidate>
-                    <!-- Email field -->
-                    <div class="form-group">
-                        <label for="loginEmail" class="form-label">البريد الإلكتروني</label>
-                        <input type="email" id="loginEmail" class="form-input" placeholder="name@domain.com" required autocomplete="username">
-                        <span class="form-error">يرجى كتابة البريد الإلكتروني بشكل صحيح.</span>
+            <!-- Nav Tabs Switcher (Login / Register) -->
+            <div class="auth-nav-tabs" id="authNavTabs">
+                <button type="button" class="auth-nav-tab active" id="tabLoginBtn" onclick="switchAuthMode('login')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                        <polyline points="10 17 15 12 10 7"/>
+                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    <span>تسجيل الدخول</span>
+                </button>
+                <button type="button" class="auth-nav-tab" id="tabRegisterBtn" onclick="switchAuthMode('register')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    <span>إنشاء حساب جديد</span>
+                </button>
+            </div>
+
+            <!-- Shared Alert Message Box -->
+            <div class="auth-alert-box" id="authAlertBox" role="alert">
+                <svg id="alertIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"></svg>
+                <span id="alertMessage"></span>
+            </div>
+
+            <!-- Google One-Click Login -->
+            <button type="button" class="google-auth-btn" id="googleAuthBtn" aria-label="تسجيل الدخول باستخدام Google">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span id="googleBtnText">المتابعة السريعة بحساب Google</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="auth-divider">
+                <span>أو باستخدام البريد الإلكتروني</span>
+            </div>
+
+            <!-- ==========================================
+                 VIEW 1: LOGIN FORM
+                 ========================================== -->
+            <div class="auth-view-panel active" id="loginViewPanel">
+                <form id="medicoLoginForm" novalidate>
+                    <!-- Email -->
+                    <div class="medico-input-group" id="grpLoginEmail">
+                        <label for="loginEmail" class="medico-input-label">
+                            <span>البريد الإلكتروني</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="email" id="loginEmail" class="medico-text-input" placeholder="doctor@example.com" required autocomplete="username">
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                        </div>
+                        <span class="input-error-msg">يرجى إدخال بريد إلكتروني صحيح.</span>
                     </div>
 
-                    <!-- Password field -->
-                    <div class="form-group">
-                        <label for="loginPassword" class="form-label">كلمة المرور</label>
-                        <div class="password-input-wrapper">
-                            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)" title="إظهار كلمة المرور">
-                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="eye-icon">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.644C3.76 8.85 8.002 6 13 6c4.998 0 9.24 2.85 10.965 5.678a1.012 1.012 0 0 1 0 .644C22.24 15.15 17.998 18 13 18c-4.998 0-9.24-2.85-10.965-5.678Z" />
+                    <!-- Password -->
+                    <div class="medico-input-group" id="grpLoginPassword">
+                        <label for="loginPassword" class="medico-input-label">
+                            <span>كلمة المرور</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="password" id="loginPassword" class="medico-text-input" placeholder="••••••••" required autocomplete="current-password">
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('loginPassword', this)" title="إظهار كلمة المرور">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                 </svg>
                             </button>
                         </div>
-                        <span class="form-error">كلمة المرور مطلوبة (على الأقل 6 خانات).</span>
+                        <span class="input-error-msg">كلمة المرور مطلوبة (6 أحرف على الأقل).</span>
                     </div>
 
-                    <!-- Helpers row -->
-                    <div class="form-helpers">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="loginRememberMe">
-                            <span>تذكرني</span>
+                    <!-- Helper Row -->
+                    <div class="form-helper-row">
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" id="loginRememberMe" checked>
+                            <span>تذكرني على هذا الجهاز</span>
                         </label>
-                        <a href="#" class="forgot-link" id="forgotPasswordBtn">هل نسيت كلمة المرور؟</a>
+                        <button type="button" class="forgot-pass-trigger" onclick="switchAuthMode('forgot')">نسيت كلمة المرور؟</button>
                     </div>
 
-                    <!-- Submit Login -->
-                    <button type="submit" id="loginSubmitBtn" class="btn btn-primary btn-form">تسجيل الدخول</button>
+                    <!-- Submit Button -->
+                    <button type="submit" id="loginSubmitBtn" class="auth-submit-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        <span>تسجيل الدخول إلى حسابي</span>
+                    </button>
                 </form>
             </div>
 
-            <!-- REGISTER/SIGNUP VIEW -->
-            <div class="form-view" id="registerFormView">
-                <form id="firebaseRegisterForm" novalidate>
-                    <!-- Full Name -->
-                    <div class="form-group">
-                        <label for="registerName" class="form-label">الاسم بالكامل</label>
-                        <input type="text" id="registerName" class="form-input" placeholder="اكتب اسمك الثلاثي" required autocomplete="name">
-                        <span class="form-error">يرجى كتابة الاسم الثلاثي بالكامل.</span>
+            <!-- ==========================================
+                 VIEW 2: REGISTER FORM
+                 ========================================== -->
+            <div class="auth-view-panel" id="registerViewPanel">
+                <form id="medicoRegisterForm" novalidate>
+                    <!-- Name -->
+                    <div class="medico-input-group" id="grpRegName">
+                        <label for="regName" class="medico-input-label">
+                            <span>الاسم بالكامل (ثلاثي)</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="text" id="regName" class="medico-text-input" placeholder="د. أحمد محمد علي" required autocomplete="name">
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                        </div>
+                        <span class="input-error-msg">يرجى كتابة الاسم الثلاثي كاملاً.</span>
                     </div>
 
-                    <!-- Email field -->
-                    <div class="form-group">
-                        <label for="registerEmail" class="form-label">البريد الإلكتروني</label>
-                        <input type="email" id="registerEmail" class="form-input" placeholder="name@domain.com" required autocomplete="email">
-                        <span class="form-error">يرجى كتابة البريد الإلكتروني بشكل صحيح.</span>
+                    <!-- Email -->
+                    <div class="medico-input-group" id="grpRegEmail">
+                        <label for="regEmail" class="medico-input-label">
+                            <span>البريد الإلكتروني</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="email" id="regEmail" class="medico-text-input" placeholder="doctor@example.com" required autocomplete="email">
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                        </div>
+                        <span class="input-error-msg">يرجى إدخال بريد إلكتروني صحيح.</span>
                     </div>
 
-                    <!-- Password field -->
-                    <div class="form-group">
-                        <label for="registerPassword" class="form-label">كلمة المرور</label>
-                        <div class="password-input-wrapper">
-                            <input type="password" id="registerPassword" class="form-input" placeholder="لا تقل عن 6 خانات" required autocomplete="new-password">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('registerPassword', this)" title="إظهار كلمة المرور">
-                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="eye-icon">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.644C3.76 8.85 8.002 6 13 6c4.998 0 9.24 2.85 10.965 5.678a1.012 1.012 0 0 1 0 .644C22.24 15.15 17.998 18 13 18c-4.998 0-9.24-2.85-10.965-5.678Z" />
+                    <!-- Medical Specialty / Faculty -->
+                    <div class="medico-input-group">
+                        <label for="regSpecialty" class="medico-input-label">
+                            <span>الكلية / التخصص الطبي</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <select id="regSpecialty" class="medico-select-input">
+                                <option value="human-medicine">كلية الطب البشري (Medicine)</option>
+                                <option value="dentistry">كلية طب الأسنان (Dentistry)</option>
+                                <option value="pharmacy">كلية الصيدلة (Pharmacy)</option>
+                                <option value="physiotherapy">العلاج الطبيعي (Physiotherapy)</option>
+                                <option value="nursing">التمريض والعلوم الصحية (Nursing)</option>
+                                <option value="internship">طبيب امتياز / ممارس عام (Intern/GP)</option>
+                                <option value="other">تخصص طبي آخر</option>
+                            </select>
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+                            </span>
+                            <span class="select-arrow-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="medico-input-group" id="grpRegPassword">
+                        <label for="regPassword" class="medico-input-label">
+                            <span>كلمة المرور</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="password" id="regPassword" class="medico-text-input" placeholder="6 خانات أو أكثر" required autocomplete="new-password">
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('regPassword', this)" title="إظهار كلمة المرور">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                 </svg>
                             </button>
                         </div>
-                        <span class="form-error">كلمة المرور يجب أن تكون 6 خانات أو أكثر.</span>
+                        <div class="password-strength-bar" id="passStrengthBar">
+                            <div class="password-strength-fill" id="passStrengthFill"></div>
+                        </div>
+                        <span class="input-error-msg">كلمة المرور يجب ألا تقل عن 6 خانات.</span>
                     </div>
 
-                    <!-- Terms checkbox -->
-                    <div class="form-helpers">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="registerTerms" required>
-                            <span>أوافق على الشروط وسياسة الخصوصية</span>
+                    <!-- Terms agreement -->
+                    <div class="form-helper-row">
+                        <label class="custom-checkbox-label">
+                            <input type="checkbox" id="regTerms" required checked>
+                            <span>أوافق على شروط الاستخدام وسياسة الخصوصية</span>
                         </label>
                     </div>
 
                     <!-- Submit Register -->
-                    <button type="submit" id="registerSubmitBtn" class="btn btn-primary btn-form">إنشاء حساب جديد</button>
+                    <button type="submit" id="registerSubmitBtn" class="auth-submit-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        <span>إنشاء حساب والبدء الآن</span>
+                    </button>
                 </form>
             </div>
 
-            <!-- Social Login integration (Google) -->
-            <div class="social-divider">أو تسجيل الدخول بواسطة</div>
-            <button type="button" class="btn-google" id="googleLoginBtn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.34 0-6.05-2.71-6.05-6.05s2.71-6.05 6.05-6.05c1.47 0 2.82.52 3.88 1.41l3.14-3.14C19.06 2.18 15.82 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.48 0 11.24-4.56 11.24-11.24 0-.76-.08-1.5-.22-2.17H12.24z"/>
-                </svg>
-                <span>تسجيل الدخول بحساب Google</span>
-            </button>
+            <!-- ==========================================
+                 VIEW 3: FORGOT PASSWORD FORM (INLINE)
+                 ========================================== -->
+            <div class="auth-view-panel" id="forgotViewPanel">
+                <form id="medicoForgotForm" novalidate>
+                    <div class="medico-input-group" id="grpForgotEmail">
+                        <label for="forgotEmail" class="medico-input-label">
+                            <span>أدخل بريدك الإلكتروني المسجل</span>
+                        </label>
+                        <div class="medico-input-wrapper">
+                            <input type="email" id="forgotEmail" class="medico-text-input" placeholder="doctor@example.com" required>
+                            <span class="input-lead-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                        </div>
+                        <span class="input-error-msg">يرجى كتابة بريد إلكتروني صحيح.</span>
+                    </div>
 
-            <!-- Test Resend Email Notification -->
-            <div style="margin-top: 20px; text-align: center;">
-                <button type="button" id="testEmailBtn" style="background: rgba(13, 148, 136, 0.1); border: 1.5px dashed var(--accent); color: var(--accent-light); width: 100%; padding: 12px; border-radius: var(--border-radius-sm); cursor: pointer; font-weight: 700; transition: var(--transition-normal); font-family: var(--font-heading);">
-                    🧪 إرسال إيميل تجريبي للتحقق من Resend
-                </button>
+                    <button type="submit" id="forgotSubmitBtn" class="auth-submit-btn" style="margin-bottom: 16px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <span>إرسال رابط استعادة كلمة المرور</span>
+                    </button>
+
+                    <button type="button" class="back-pill-btn" onclick="switchAuthMode('login')" style="width: 100%; justify-content: center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        <span>العودة لصفحة تسجيل الدخول</span>
+                    </button>
+                </form>
             </div>
-        </div>
+
+        </main>
+
+        <!-- ====================================================
+             LEFT COLUMN: Medical Prestige & Showcase (Desktop)
+             ==================================================== -->
+        <aside class="auth-showcase-column" aria-hidden="true">
+            <!-- Background Elements -->
+            <div class="showcase-blob showcase-blob-1"></div>
+            <div class="showcase-blob showcase-blob-2"></div>
+            <div class="showcase-grid-pattern"></div>
+
+            <!-- Top Tagline -->
+            <div class="showcase-badge-pill">
+                <span class="pulse-dot"></span>
+                <span>المنصة الرائدة في شروحات الطب والعلوم السريرية</span>
+            </div>
+
+            <!-- Center Showcase Content -->
+            <div class="showcase-content">
+                <h2 class="showcase-headline">
+                    بوابتك لاحتراف الطب بأسلوب <span>علمي وعملي</span> حديث
+                </h2>
+
+                <div class="showcase-cards-list">
+                    <!-- Doctor Supervisor Card -->
+                    <div class="showcase-glass-card doctor-quote-card">
+                        <div class="doctor-avatar-circle">
+                            🩺
+                        </div>
+                        <div class="doctor-quote-info">
+                            <h4>إشراف وتدريس: د. أحمد مجدي</h4>
+                            <p>«الطب ليس مجرد نظريات للحفظ، بل فهم سريري وربط مباشر ينقذ حياة المريض في اللحظات الحرجة.»</p>
+                        </div>
+                    </div>
+
+                    <!-- Platform Live Stats -->
+                    <div class="showcase-stats-row">
+                        <div class="stat-glass-box">
+                            <div class="stat-glass-num">15,000+</div>
+                            <div class="stat-glass-label">طالب وطبيبة</div>
+                        </div>
+                        <div class="stat-glass-box">
+                            <div class="stat-glass-num">3</div>
+                            <div class="stat-glass-label">كورسات تخصصية</div>
+                        </div>
+                        <div class="stat-glass-box">
+                            <div class="stat-glass-num">4.9 / 5</div>
+                            <div class="stat-glass-label">تقييم الطلاب</div>
+                        </div>
+                    </div>
+
+                    <!-- Membership Highlights -->
+                    <div class="showcase-glass-card" style="padding: 16px 20px;">
+                        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem; color: #e2e8f0;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: #00b4d8; font-size: 1.1rem;">✔</span>
+                                <span>وصول فوري وشامل لجميع المحاضرات ومقاطع الفيديو</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: #00b4d8; font-size: 1.1rem;">✔</span>
+                                <span>شهادات إتمام معتمدة باسم الطالب بعد كل كورس</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: #00b4d8; font-size: 1.1rem;">✔</span>
+                                <span>متابعة وتواصل مستمر للإجابة عن الأسئلة الطبية</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Showcase Footer -->
+            <div class="showcase-footer">
+                <span>جميع الحقوق محفوظة &copy; <span id="authYear"></span> MEDICO</span>
+                <span>بإشراف د. أحمد مجدي</span>
+            </div>
+        </aside>
+
     </div>
 
-    <!-- Firebase Init + Auth Logic -->
+    <!-- ====================================================
+         JAVASCRIPT & FIREBASE INTEGRATION LOGIC
+         ==================================================== -->
     <script>
-        // ─── Firebase Configuration ───────────────────────────────────────────────
+        // Set year
+        document.getElementById('authYear').textContent = new Date().getFullYear();
+
+        // ─── Firebase Init Safely ──────────────────────
         const firebaseConfig = {
             apiKey: "AIzaSyA49NmcBO1HmTR1_j01_EzmGUJAFl6SIS0",
             authDomain: "meproject-e1927.firebaseapp.com",
@@ -418,366 +1156,362 @@
             measurementId: "G-4R6BE0X1G8"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-
-        // ─── If user is already logged in, redirect to home ──────────────────────
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                window.location.href = 'index.html';
+        if (typeof firebase !== 'undefined') {
+            if (firebase.apps && !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
             }
-        });
+        }
 
-        // ─── Arabic Firebase Error Messages ──────────────────────────────────────
+        const auth = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth() : null;
+
+        // Auto-redirect if already signed in
+        if (auth) {
+            auth.onAuthStateChanged(function (user) {
+                if (user) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // ─── Arabic Error Messages ─────────────────────
         function getArabicError(code) {
             const errors = {
-                'auth/user-not-found':       'لا يوجد حساب مرتبط بهذا البريد الإلكتروني.',
-                'auth/wrong-password':       'كلمة المرور غير صحيحة. حاول مرة أخرى.',
-                'auth/invalid-email':        'صيغة البريد الإلكتروني غير صحيحة.',
-                'auth/user-disabled':        'تم تعطيل هذا الحساب. تواصل مع الدعم.',
-                'auth/email-already-in-use': 'هذا البريد الإلكتروني مستخدم مسبقاً. جرب تسجيل الدخول.',
-                'auth/weak-password':        'كلمة المرور ضعيفة جداً. استخدم 6 خانات أو أكثر.',
-                'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول. حاول مرة أخرى.',
-                'auth/network-request-failed': 'فشل الاتصال بالإنترنت. تحقق من اتصالك وحاول مجدداً.',
-                'auth/too-many-requests':    'محاولات كثيرة جداً. يرجى الانتظار قليلاً ثم المحاولة مجدداً.',
-                'auth/invalid-credential':   'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
-                'auth/operation-not-allowed': 'تسجيل الدخول بواسطة Google غير مفعّل في إعدادات Firebase Console. يرجى تفعيله من قسم Authentication -> Sign-in method.',
-                'auth/operation-not-supported-in-this-environment': 'تسجيل الدخول بواسطة Google غير مدعوم في هذه البيئة (مثل فتح الملف مباشرة file://). يرجى تشغيل الموقع عبر خادم محلي (مثل server.js).',
-                'auth/popup-blocked':        'تم حظر النافذة المنبثقة من قبل المتصفح. يرجى السماح بالنوافذ المنبثقة أو استخدام تسجيل الدخول المباشر.',
+                'auth/user-not-found': 'لا يوجد حساب مرتبط بهذا البريد الإلكتروني.',
+                'auth/wrong-password': 'كلمة المرور غير صحيحة. يرجى التأكد والمحاولة مجدداً.',
+                'auth/invalid-email': 'صيغة البريد الإلكتروني غير صحيحة.',
+                'auth/user-disabled': 'تم تعطيل هذا الحساب. يرجى التواصل مع إدارة المنصة.',
+                'auth/email-already-in-use': 'هذا البريد الإلكتروني مسجل بالفعل. جرب تسجيل الدخول بدلاً من ذلك.',
+                'auth/weak-password': 'كلمة المرور ضعيفة جداً. استخدم 6 خانات أو أكثر.',
+                'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول قبل إتمامها. حاول مرة أخرى.',
+                'auth/network-request-failed': 'تعذر الاتصال بالإنترنت. يرجى التحقق من اتصالك والمحاولة مجدداً.',
+                'auth/too-many-requests': 'محاولات دخول كثيرة متتالية. يرجى الانتظار قليلاً ثم المحاولة.',
+                'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
             };
-            return errors[code] || `حدث خطأ غير متوقع (${code}). يرجى المحاولة مرة أخرى.`;
+            return errors[code] || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
         }
 
-        // ─── Show/Hide a styled inline error message ──────────────────────────────
-        function showAuthError(containerId, message) {
-            let errorDiv = document.getElementById(containerId);
-            if (!errorDiv) {
-                errorDiv = document.createElement('div');
-                errorDiv.id = containerId;
-                errorDiv.style.cssText = 'background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;padding:12px 16px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;text-align:center;';
-                const form = document.getElementById(containerId === 'loginError' ? 'firebaseLoginForm' : 'firebaseRegisterForm');
-                form.insertBefore(errorDiv, form.firstChild);
-            }
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+        // ─── Alert Banner System ───────────────────────
+        const alertBox = document.getElementById('authAlertBox');
+        const alertMsg = document.getElementById('alertMessage');
+        const alertIcon = document.getElementById('alertIcon');
+
+        function showAlert(msg, isSuccess = false) {
+            alertBox.className = 'auth-alert-box ' + (isSuccess ? 'alert-success' : 'alert-error');
+            alertMsg.textContent = msg;
+            alertIcon.innerHTML = isSuccess
+                ? `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`
+                : `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`;
+            alertBox.style.display = 'flex';
         }
 
-        function hideAuthError(containerId) {
-            const el = document.getElementById(containerId);
-            if (el) el.style.display = 'none';
+        function hideAlert() {
+            alertBox.style.display = 'none';
         }
 
-        // ─── Switch between Login / Register tabs ────────────────────────────────
-        function switchTab(mode) {
-            const loginBtn = document.getElementById('tabLoginBtn');
-            const registerBtn = document.getElementById('tabRegisterBtn');
-            const loginForm = document.getElementById('loginFormView');
-            const registerForm = document.getElementById('registerFormView');
-            const mainTitle = document.getElementById('authTitle');
-            const mainSubtitle = document.getElementById('authSubtitle');
+        // ─── Switch Modes (Login, Register, Forgot) ───
+        function switchAuthMode(mode) {
+            hideAlert();
+            const tabLogin = document.getElementById('tabLoginBtn');
+            const tabReg = document.getElementById('tabRegisterBtn');
+            const navTabs = document.getElementById('authNavTabs');
+            const pnlLogin = document.getElementById('loginViewPanel');
+            const pnlReg = document.getElementById('registerViewPanel');
+            const pnlForgot = document.getElementById('forgotViewPanel');
+            const mainTitle = document.getElementById('authMainTitle');
+            const subTitle = document.getElementById('authSubTitle');
+            const googleBtn = document.getElementById('googleAuthBtn');
+            const divider = document.querySelector('.auth-divider');
+
+            pnlLogin.classList.remove('active');
+            pnlReg.classList.remove('active');
+            pnlForgot.classList.remove('active');
 
             if (mode === 'login') {
-                loginBtn.classList.add('active');
-                registerBtn.classList.remove('active');
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-                mainTitle.textContent = 'مرحباً بك مجدداً';
-                mainSubtitle.textContent = 'سجل دخولك لمتابعة كورساتك الطبية الأكاديمية';
-            } else {
-                loginBtn.classList.remove('active');
-                registerBtn.classList.add('active');
-                loginForm.classList.remove('active');
-                registerForm.classList.add('active');
-                mainTitle.textContent = 'إنشاء حساب جديد';
-                mainSubtitle.textContent = 'سجل الآن مجاناً للبدء في استعراض الكورسات والمحاضرات';
+                navTabs.style.display = 'grid';
+                googleBtn.style.display = 'flex';
+                divider.style.display = 'flex';
+                tabLogin.classList.add('active');
+                tabReg.classList.remove('active');
+                pnlLogin.classList.add('active');
+                mainTitle.textContent = 'مرحباً بك مجدداً دكتور 🩺';
+                subTitle.textContent = 'سجّل دخولك لمتابعة محاضراتك الطبية ومسارك التعليمي';
+            } else if (mode === 'register') {
+                navTabs.style.display = 'grid';
+                googleBtn.style.display = 'flex';
+                divider.style.display = 'flex';
+                tabLogin.classList.remove('active');
+                tabReg.classList.add('active');
+                pnlReg.classList.add('active');
+                mainTitle.textContent = 'انضم إلى مجتمع MEDICO الطبي 🎓';
+                subTitle.textContent = 'أنشئ حسابك وتعلّم العلوم الطبية بأسلوب سريري حديث';
+            } else if (mode === 'forgot') {
+                navTabs.style.display = 'none';
+                googleBtn.style.display = 'none';
+                divider.style.display = 'none';
+                pnlForgot.classList.add('active');
+                mainTitle.textContent = 'استعادة كلمة المرور 🔑';
+                subTitle.textContent = 'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور فوراً';
             }
         }
 
-        // Toggle password visibility
-        function togglePasswordVisibility(inputId, button) {
-            const passwordInput = document.getElementById(inputId);
-            const eyeIcon = button.querySelector('svg');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                button.title = 'إخفاء كلمة المرور';
-                // Switch eye icon SVG (slashed eye)
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                `;
-            } else {
-                passwordInput.type = 'password';
-                button.title = 'إظهار كلمة المرور';
-                // Switch back to regular eye icon SVG
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.644C3.76 8.85 8.002 6 13 6c4.998 0 9.24 2.85 10.965 5.678a1.012 1.012 0 0 1 0 .644C22.24 15.15 17.998 18 13 18c-4.998 0-9.24-2.85-10.965-5.678Z" />
-                `;
-            }
+        // ─── Toggle Password Eye ──────────────────────
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.title = isPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور';
+            btn.innerHTML = isPassword
+                ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+                : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
         }
 
-        // --- Frontend Validation Helpers ---
+        // ─── Password Strength Live Meter ─────────────
+        const regPassInput = document.getElementById('regPassword');
+        const passBar = document.getElementById('passStrengthBar');
+        const passFill = document.getElementById('passStrengthFill');
+
+        if (regPassInput) {
+            regPassInput.addEventListener('input', function () {
+                const val = regPassInput.value;
+                if (!val) {
+                    passBar.style.display = 'none';
+                    return;
+                }
+                passBar.style.display = 'block';
+                if (val.length < 6) {
+                    passFill.className = 'password-strength-fill strength-weak';
+                } else if (val.length < 10 || !/[0-9]/.test(val)) {
+                    passFill.className = 'password-strength-fill strength-medium';
+                } else {
+                    passFill.className = 'password-strength-fill strength-strong';
+                }
+            });
+        }
+
+        // ─── Clear Error Styling on Input ─────────────
+        document.querySelectorAll('.medico-text-input').forEach(input => {
+            input.addEventListener('input', () => {
+                const group = input.closest('.medico-input-group');
+                if (group) group.classList.remove('has-error');
+            });
+        });
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        function setValidationState(input, isValid) {
-            const group = input.closest('.form-group');
-            if (isValid) {
-                group.classList.remove('invalid');
-            } else {
-                group.classList.add('invalid');
-            }
-        }
-
-        // Add input event listeners to clear error states when typing
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.addEventListener('input', () => {
-                input.closest('.form-group').classList.remove('invalid');
-            });
-        });
-
-        // ─── Send Login Notification to Netlify Function ──────────────────────────
-        async function sendLoginNotification(email, displayName, uid, method) {
+        // ─── Background Notification Helper ───────────
+        async function sendNotification(email, name, uid, method) {
             try {
-                const response = await fetch('/.netlify/functions/login-notification', {
+                await fetch('/.netlify/functions/login-notification', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        displayName: displayName || '',
-                        uid: uid,
-                        method: method
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, displayName: name || '', uid, method })
                 });
-                const result = await response.json();
-                if (!response.ok) {
-                    const errDetails = result.details;
-                    const errMsg = (errDetails && (errDetails.message || JSON.stringify(errDetails))) || result.error || 'Unknown error';
-                    console.error('Server-side notification failed:', errMsg);
-                    alert('⚠️ فشل إرسال إيميل الإشعار (Resend Error):\n' + errMsg);
-                } else {
-                    console.log('Server-side notification sent successfully:', result);
-                }
-            } catch (err) {
-                console.error('Failed to send login notification:', err);
-                alert('⚠️ فشل الاتصال بخدمة الإشعارات:\n' + err.message);
+            } catch (e) {
+                // Background task; do not block user
             }
         }
 
-        // ─── LOGIN FORM SUBMISSION ────────────────────────────────────────────────
-        document.getElementById('firebaseLoginForm').addEventListener('submit', function (e) {
+        // ─── SUBMIT 1: LOGIN ──────────────────────────
+        document.getElementById('medicoLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            hideAuthError('loginError');
+            hideAlert();
 
-            const emailInput    = document.getElementById('loginEmail');
-            const passwordInput = document.getElementById('loginPassword');
-            const rememberMe    = document.getElementById('loginRememberMe').checked;
-
-            const isEmailValid    = emailRegex.test(emailInput.value.trim());
-            const isPasswordValid = passwordInput.value.length >= 6;
-
-            setValidationState(emailInput, isEmailValid);
-            setValidationState(passwordInput, isPasswordValid);
-            if (!isEmailValid || !isPasswordValid) return;
-
+            const emailEl = document.getElementById('loginEmail');
+            const passEl = document.getElementById('loginPassword');
+            const rememberMe = document.getElementById('loginRememberMe').checked;
             const submitBtn = document.getElementById('loginSubmitBtn');
+
+            const isEmailOk = emailRegex.test(emailEl.value.trim());
+            const isPassOk = passEl.value.length >= 6;
+
+            document.getElementById('grpLoginEmail').classList.toggle('has-error', !isEmailOk);
+            document.getElementById('grpLoginPassword').classList.toggle('has-error', !isPassOk);
+
+            if (!isEmailOk || !isPassOk) return;
+
+            if (!auth) {
+                showAlert('خدمة تسجيل الدخول غير متاحة حالياً. تأكد من اتصالك بالإنترنت.');
+                return;
+            }
+
             submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري تسجيل الدخول...';
+            submitBtn.innerHTML = `<span>جاري تسجيل الدخول...</span>`;
 
-            // Set session persistence based on "Remember Me"
-            const persistence = rememberMe
-                ? firebase.auth.Auth.Persistence.LOCAL
-                : firebase.auth.Auth.Persistence.SESSION;
+            try {
+                const persistence = rememberMe
+                    ? firebase.auth.Auth.Persistence.LOCAL
+                    : firebase.auth.Auth.Persistence.SESSION;
 
-            auth.setPersistence(persistence)
-                .then(() => auth.signInWithEmailAndPassword(emailInput.value.trim(), passwordInput.value))
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
+                await auth.setPersistence(persistence);
+                const cred = await auth.signInWithEmailAndPassword(emailEl.value.trim(), passEl.value);
+                const user = cred.user;
+
+                if (typeof dbSyncUserLogin === 'function') {
                     await dbSyncUserLogin(user, user.displayName);
-                    await sendLoginNotification(user.email, user.displayName, user.uid, 'email-password');
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    showAuthError('loginError', getArabicError(error.code));
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'تسجيل الدخول';
-                });
+                }
+                sendNotification(user.email, user.displayName, user.uid, 'email-password');
+                window.location.href = 'index.html';
+            } catch (err) {
+                showAlert(getArabicError(err.code));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    <span>تسجيل الدخول إلى حسابي</span>
+                `;
+            }
         });
 
-        // ─── REGISTER FORM SUBMISSION ─────────────────────────────────────────────
-        document.getElementById('firebaseRegisterForm').addEventListener('submit', function (e) {
+        // ─── SUBMIT 2: REGISTER ───────────────────────
+        document.getElementById('medicoRegisterForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            hideAuthError('registerError');
+            hideAlert();
 
-            const nameInput     = document.getElementById('registerName');
-            const emailInput    = document.getElementById('registerEmail');
-            const passwordInput = document.getElementById('registerPassword');
-            const termsInput    = document.getElementById('registerTerms');
-
-            const isNameValid     = nameInput.value.trim().length >= 3;
-            const isEmailValid    = emailRegex.test(emailInput.value.trim());
-            const isPasswordValid = passwordInput.value.length >= 6;
-
-            setValidationState(nameInput, isNameValid);
-            setValidationState(emailInput, isEmailValid);
-            setValidationState(passwordInput, isPasswordValid);
-
-            if (!termsInput.checked) {
-                showAuthError('registerError', 'يرجى الموافقة على الشروط وسياسة الخصوصية للمتابعة.');
-                return;
-            }
-            if (!isNameValid || !isEmailValid || !isPasswordValid) return;
-
+            const nameEl = document.getElementById('regName');
+            const emailEl = document.getElementById('regEmail');
+            const passEl = document.getElementById('regPassword');
+            const specialtyEl = document.getElementById('regSpecialty');
+            const termsEl = document.getElementById('regTerms');
             const submitBtn = document.getElementById('registerSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري إنشاء الحساب...';
 
-            auth.createUserWithEmailAndPassword(emailInput.value.trim(), passwordInput.value)
-                .then((userCredential) => {
-                    // Save the display name to the Firebase Auth profile
-                    return userCredential.user.updateProfile({
-                        displayName: nameInput.value.trim()
-                    }).then(() => userCredential);
-                })
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    await dbSyncUserLogin(user, nameInput.value.trim());
-                    await sendLoginNotification(user.email, nameInput.value.trim(), user.uid, 'email-signup');
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    showAuthError('registerError', getArabicError(error.code));
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'إنشاء حساب جديد';
-                });
-        });
+            const isNameOk = nameEl.value.trim().length >= 3;
+            const isEmailOk = emailRegex.test(emailEl.value.trim());
+            const isPassOk = passEl.value.length >= 6;
 
-        // ─── GOOGLE SIGN IN ───────────────────────────────────────────────────────
-        document.getElementById('googleLoginBtn').addEventListener('click', function() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            // Check if we are running under file:// protocol
-            if (window.location.protocol === 'file:') {
-                showAuthError('loginError', 'تسجيل الدخول بواسطة Google لا يعمل عند فتح الملف مباشرة (file://). يرجى تشغيل الخادم المحلي (Local Server) عبر تشغيل ملف server.js أو باستخدام برنامج Live Server.');
+            document.getElementById('grpRegName').classList.toggle('has-error', !isNameOk);
+            document.getElementById('grpRegEmail').classList.toggle('has-error', !isEmailOk);
+            document.getElementById('grpRegPassword').classList.toggle('has-error', !isPassOk);
+
+            if (!termsEl.checked) {
+                showAlert('يجب الموافقة على شروط الاستخدام للمتابعة.');
                 return;
             }
 
-            hideAuthError('loginError');
-            const googleBtn = document.getElementById('googleLoginBtn');
-            const originalContent = googleBtn.innerHTML;
-            googleBtn.disabled = true;
-            googleBtn.innerHTML = `
-                <svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px; vertical-align: middle;">
-                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"></circle>
-                    <path d="M4 12a8 8 0 0 1 8-8" stroke="#fff"></path>
-                </svg>
-                <span>جاري الاتصال بـ Google...</span>
-            `;
+            if (!isNameOk || !isEmailOk || !isPassOk) return;
 
-            auth.signInWithPopup(provider)
-                .then(async (result) => {
-                    const user = result.user;
-                    await dbSyncUserLogin(user, user.displayName);
-                    await sendLoginNotification(user.email, user.displayName, user.uid, 'google-popup');
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    console.error("Google Popup Auth Error: ", error);
-                    // If popup is blocked, try redirect fallback
-                    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-                        googleBtn.innerHTML = `
-                            <svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 8px; vertical-align: middle;">
-                                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"></circle>
-                                <path d="M4 12a8 8 0 0 1 8-8" stroke="#fff"></path>
-                            </svg>
-                            <span>جاري إعادة التوجيه لصفحة الدخول...</span>
-                        `;
-                        auth.signInWithRedirect(provider);
-                    } else {
-                        showAuthError('loginError', getArabicError(error.code));
-                        googleBtn.disabled = false;
-                        googleBtn.innerHTML = originalContent;
-                    }
-                });
+            if (!auth) {
+                showAlert('خدمة إنشاء الحساب غير متاحة حالياً.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span>جاري إنشاء الحساب...</span>`;
+
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(emailEl.value.trim(), passEl.value);
+                const user = cred.user;
+
+                await user.updateProfile({ displayName: nameEl.value.trim() });
+
+                if (typeof dbSyncUserLogin === 'function') {
+                    await dbSyncUserLogin(user, nameEl.value.trim());
+                }
+
+                if (typeof dbLogActivity === 'function') {
+                    await dbLogActivity('user registered', {
+                        email: user.email,
+                        name: nameEl.value.trim(),
+                        specialty: specialtyEl.value
+                    });
+                }
+
+                sendNotification(user.email, nameEl.value.trim(), user.uid, 'email-signup');
+                window.location.href = 'index.html';
+            } catch (err) {
+                showAlert(getArabicError(err.code));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    <span>إنشاء حساب والبدء الآن</span>
+                `;
+            }
         });
 
-        // Handle the redirect sign-in result when returning to the page
-        auth.getRedirectResult()
-            .then(async (result) => {
+        // ─── SUBMIT 3: FORGOT PASSWORD ────────────────
+        document.getElementById('medicoForgotForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideAlert();
+
+            const emailEl = document.getElementById('forgotEmail');
+            const isEmailOk = emailRegex.test(emailEl.value.trim());
+            document.getElementById('grpForgotEmail').classList.toggle('has-error', !isEmailOk);
+
+            if (!isEmailOk) return;
+
+            const submitBtn = document.getElementById('forgotSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span>جاري إرسال الرابط...</span>`;
+
+            try {
+                await auth.sendPasswordResetEmail(emailEl.value.trim());
+                if (typeof dbLogActivity === 'function') {
+                    await dbLogActivity('password reset', { email: emailEl.value.trim() });
+                }
+                showAlert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني بنجاح! تفقد صندوق الوارد أو الرسائل غير المرغوبة.', true);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>إرسال مرة أخرى</span>`;
+            } catch (err) {
+                showAlert(getArabicError(err.code));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <span>إرسال رابط استعادة كلمة المرور</span>
+                `;
+            }
+        });
+
+        // ─── GOOGLE LOGIN INTEGRATION ─────────────────
+        document.getElementById('googleAuthBtn').addEventListener('click', async function () {
+            hideAlert();
+            if (!auth) {
+                showAlert('خدمة تسجيل الدخول غير متاحة حالياً.');
+                return;
+            }
+
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+
+            const btnText = document.getElementById('googleBtnText');
+            const originalText = btnText.textContent;
+            btnText.textContent = 'جاري التحقق من Google...';
+
+            try {
+                const res = await auth.signInWithPopup(provider);
+                const user = res.user;
+
+                if (typeof dbSyncUserLogin === 'function') {
+                    await dbSyncUserLogin(user, user.displayName);
+                }
+                sendNotification(user.email, user.displayName, user.uid, 'google-popup');
+                window.location.href = 'index.html';
+            } catch (err) {
+                if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+                    try {
+                        await auth.signInWithRedirect(provider);
+                    } catch (redirectErr) {
+                        showAlert(getArabicError(redirectErr.code));
+                    }
+                } else if (err.code !== 'auth/popup-closed-by-user') {
+                    showAlert(getArabicError(err.code));
+                }
+                btnText.textContent = originalText;
+            }
+        });
+
+        // Handle Redirect Result if redirected
+        if (auth && auth.getRedirectResult) {
+            auth.getRedirectResult().then(async (result) => {
                 if (result && result.user) {
                     const user = result.user;
-                    await dbSyncUserLogin(user, user.displayName);
-                    await sendLoginNotification(user.email, user.displayName, user.uid, 'google-redirect');
+                    if (typeof dbSyncUserLogin === 'function') {
+                        await dbSyncUserLogin(user, user.displayName);
+                    }
+                    sendNotification(user.email, user.displayName, user.uid, 'google-redirect');
                     window.location.href = 'index.html';
                 }
-            })
-            .catch((error) => {
-                console.error("Google Redirect Auth Error: ", error);
-                showAuthError('loginError', getArabicError(error.code));
-            });
-
-        // ─── FORGOT PASSWORD ─────────────────────────────────────────────────────
-        document.getElementById('forgotPasswordBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const email = prompt('أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور:');
-            if (!email) return;
-
-            if (!emailRegex.test(email.trim())) {
-                showAuthError('loginError', 'الرجاء إدخال بريد إلكتروني صحيح.');
-                return;
-            }
-
-            auth.sendPasswordResetEmail(email.trim())
-                .then(async () => {
-                    await dbLogActivity('password reset', { email: email.trim() });
-                    alert('✅ تم إرسال رابط إعادة تعيين كلمة المرور إلى: ' + email.trim() + '\nيرجى مراجعة بريدك الإلكتروني.');
-                })
-                .catch((error) => {
-                    showAuthError('loginError', getArabicError(error.code));
-                });
-        });
-        // ─── TEST RESEND EMAIL BUTTON HANDLER ────────────────────────────────────
-        const testEmailBtn = document.getElementById('testEmailBtn');
-        if (testEmailBtn) {
-            testEmailBtn.addEventListener('click', async function() {
-                const originalText = testEmailBtn.textContent;
-                testEmailBtn.disabled = true;
-                testEmailBtn.textContent = '🧪 جاري إرسال الإيميل التجريبي...';
-                
-                try {
-                    const response = await fetch('/.netlify/functions/login-notification', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: 'test-user@medicocourses.com',
-                            displayName: 'طالب تجريبي (Manual Test)',
-                            uid: 'test_manual_uid_999',
-                            method: 'manual-test-button'
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    if (!response.ok) {
-                        const errDetails = result.details;
-                        const errMsg = (errDetails && (errDetails.message || JSON.stringify(errDetails))) || result.error || 'Unknown error';
-                        console.error('Test notification failed:', errMsg);
-                        alert('❌ فشل إرسال الإيميل التجريبي (Resend Error):\n' + errMsg);
-                    } else {
-                        console.log('Test notification sent successfully:', result);
-                        alert('✅ تم إرسال الإيميل التجريبي بنجاح عبر Resend!\nمعرّف الإيميل: ' + result.id);
-                    }
-                } catch (err) {
-                    console.error('Failed to send test notification:', err);
-                    alert('❌ فشل الاتصال بخدمة الإشعارات:\n' + err.message);
-                } finally {
-                    testEmailBtn.disabled = false;
-                    testEmailBtn.textContent = originalText;
-                }
+            }).catch(e => {
+                showAlert(getArabicError(e.code));
             });
         }
     </script>

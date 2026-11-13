@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
@@ -279,9 +279,16 @@
 
                         <!-- Booking Form -->
                         <div class="enrollment-form-wrapper">
+                            <!-- Selected Course Header in Enrollment Box -->
+                            <div class="enrollment-course-header">
+                                <span class="enrollment-tag">أنت تسجل في:</span>
+                                <h4 class="enrollment-course-name" id="enrollCourseTitleDisplay">اسم الكورس</h4>
+                                <p class="enrollment-course-subdesc" id="enrollCourseDescDisplay">وصف الكورس</p>
+                            </div>
+
                             <h4 class="enrollment-form-title">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                سجّل بياناتك للحجز
+                                سجل بياناتك لإتمام الحجز
                             </h4>
 
                             <form id="courseEnrollForm" novalidate>
@@ -319,7 +326,7 @@
 
                                 <button type="submit" id="enrollSubmitBtn" class="btn btn-primary btn-form enroll-btn">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                    تأكيد الحجز (150 EGP)
+                                    <span id="enrollBtnText">تأكيد الحجز والدفع (150 EGP)</span>
                                 </button>
                             </form>
 
@@ -359,7 +366,73 @@
 
             </div>
         </div>
-    </main>
+        </main>
+
+    <!-- Fast Sync Course Initialization Script (Immediate Render) -->
+    <script>
+        (function() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var id = params.get('id') || 'general-surgery';
+                var cData = {
+                    'general-surgery': {
+                        name: 'مادة الجراحة العامة (General Surgery)',
+                        badge: 'سريري متقدم',
+                        duration: '10 أسابيع',
+                        img: 'assets/images/course_general_surgery.svg',
+                        desc: 'شرح تفصيلي متكامل لمنهج الجراحة العامة: حالات البطن الحادة (Acute Abdomen)، الفتق، أورام الثدي والغدة الدرقية، وجراحة الجهاز الهضمي والمهارات الجراحية التأسيسية.'
+                    },
+                    'pediatrics': {
+                        name: 'مبادئ طب الأطفال والرعاية المتكاملة (Pediatrics)',
+                        badge: 'كلينيكال',
+                        duration: '8 أسابيع',
+                        img: 'assets/images/course_pediatrics.svg',
+                        desc: 'منهجية إكلينيكية شاملة لتشخيص وعلاج أمراض الأطفال وحديثي الولادة: تقييم النمو والتطور، التطعيمات، خطط علاج الجفاف، وأمراض الجهاز التنفسي والصفراء الوليدية.'
+                    },
+                    'histology': {
+                        name: 'علم الأنسجة وبيولوجيا الخلية (Medical Histology)',
+                        badge: 'أكاديمي أساسي',
+                        duration: '6 أسابيع',
+                        img: 'assets/images/course_histology.svg',
+                        desc: 'دراسة مجهرية تفاعلية دقيقة لخلايا وأنسجة أجهزة جسم الإنسان الأساسية الأربعة (الطلائية، الضامة، العضلية، العصبية) مع قراءة وفهم الشرائح المجهرية والصبغات النسيجية.'
+                    }
+                };
+
+                var c = cData[id] || cData['general-surgery'];
+                document.title = 'MEDICO - ' + c.name;
+
+                function setFast(elemId, val, isProp) {
+                    var el = document.getElementById(elemId);
+                    if (el) {
+                        if (isProp) el[isProp] = val;
+                        else el.textContent = val;
+                    }
+                }
+
+                setFast('breadcrumbCourse', c.name);
+                setFast('courseTitle', c.name);
+                setFast('courseDesc', c.desc);
+                setFast('courseBadge', c.badge);
+                setFast('metaDuration', c.duration);
+                setFast('metaPrice', '150 EGP');
+                setFast('enrollPrice', '150');
+                setFast('enrollCourseTitleDisplay', c.name);
+                setFast('enrollCourseDescDisplay', c.desc);
+                setFast('enrollCourseName', c.name, 'value');
+                setFast('enrollBtnText', 'تأكيد حجز ' + c.name + ' (150 EGP)');
+                setFast('paymentCourseName', c.name);
+                setFast('paymentCoursePrice', '150');
+
+                var thumb = document.getElementById('enrollThumbImg');
+                if (thumb) {
+                    thumb.src = c.img;
+                    thumb.alt = c.name;
+                }
+            } catch (err) {
+                console.warn('Fast course init notice:', err);
+            }
+        })();
+    </script>
 
     <!-- ==========================================
          FOOTER
@@ -589,67 +662,70 @@
 
     <!-- Firebase Auth State -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA49NmcBO1HmTR1_j01_EzmGUJAFl6SIS0",
-            authDomain: "meproject-e1927.firebaseapp.com",
-            projectId: "meproject-e1927",
-            storageBucket: "meproject-e1927.firebasestorage.app",
-            messagingSenderId: "666133437955",
-            appId: "1:666133437955:web:6f9f05a96bd3a31ec2f836",
-            measurementId: "G-4R6BE0X1G8"
-        };
+        (function() {
+            if (typeof firebase === 'undefined') return;
+            try {
+                if (firebase.apps && !firebase.apps.length && typeof firebaseConfig !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                const authInstance = firebase.auth();
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const authInstance = firebase.auth();
+                const navLoginBtn  = document.getElementById('navLoginBtn');
+                const navUserGroup = document.getElementById('navUserGroup');
+                const navUserName  = document.getElementById('navUserName');
+                const navLogoutBtn = document.getElementById('navLogoutBtn');
+                const navAdminLink = document.getElementById('navAdminLink');
 
-        const navLoginBtn  = document.getElementById('navLoginBtn');
-        const navUserGroup = document.getElementById('navUserGroup');
-        const navUserName  = document.getElementById('navUserName');
-        const navLogoutBtn = document.getElementById('navLogoutBtn');
-        const navAdminLink = document.getElementById('navAdminLink');
+                authInstance.onAuthStateChanged(async function(user) {
+                    if (user) {
+                        if (navLoginBtn)  navLoginBtn.style.display  = 'none';
+                        if (navUserGroup) navUserGroup.style.display = 'flex';
+                        const name = user.displayName || user.email.split('@')[0];
+                        if (navUserName)  navUserName.textContent    = '👋 أهلاً، ' + name;
+                        
+                        // Auto-fill enroll form
+                        const enrollNameEl  = document.getElementById('enrollName');
+                        const enrollEmailEl = document.getElementById('enrollEmail');
+                        if (enrollNameEl  && user.displayName) enrollNameEl.value  = user.displayName;
+                        if (enrollEmailEl && user.email)        enrollEmailEl.value = user.email;
 
-        authInstance.onAuthStateChanged(async function(user) {
-            if (user) {
-                navLoginBtn.style.display  = 'none';
-                navUserGroup.style.display = 'flex';
-                const name = user.displayName || user.email.split('@')[0];
-                navUserName.textContent    = '👋 أهلاً، ' + name;
-                
-                // Auto-fill enroll form
-                const enrollNameEl  = document.getElementById('enrollName');
-                const enrollEmailEl = document.getElementById('enrollEmail');
-                if (enrollNameEl  && user.displayName) enrollNameEl.value  = user.displayName;
-                if (enrollEmailEl && user.email)        enrollEmailEl.value = user.email;
+                        // Update lastSeenAt timestamp
+                        if (typeof dbUpdateLastSeen === 'function') dbUpdateLastSeen();
 
-                // Update lastSeenAt timestamp
-                dbUpdateLastSeen();
-
-                // Check user role in Firestore
-                try {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists && userDoc.data().role === 'admin') {
-                        if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                        // Check user role in Firestore
+                        try {
+                            if (typeof db !== 'undefined' && db) {
+                                const userDoc = await db.collection('users').doc(user.uid).get();
+                                if (userDoc.exists && userDoc.data().role === 'admin') {
+                                    if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                                } else {
+                                    if (navAdminLink) navAdminLink.style.display = 'none';
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error fetching user role:', e);
+                        }
                     } else {
+                        if (navLoginBtn)  navLoginBtn.style.display  = '';
+                        if (navUserGroup) navUserGroup.style.display = 'none';
+                        if (navUserName)  navUserName.textContent    = '';
                         if (navAdminLink) navAdminLink.style.display = 'none';
                     }
-                } catch (e) {
-                    console.error('Error fetching user role:', e);
-                }
-            } else {
-                navLoginBtn.style.display  = '';
-                navUserGroup.style.display = 'none';
-                navUserName.textContent    = '';
-                if (navAdminLink) navAdminLink.style.display = 'none';
-            }
-        });
+                });
 
-        navLogoutBtn && navLogoutBtn.addEventListener('click', function() {
-            dbLogout().then(function() {
-                window.location.reload();
-            });
-        });
+                if (navLogoutBtn) {
+                    navLogoutBtn.addEventListener('click', function() {
+                        if (typeof dbLogout === 'function') {
+                            dbLogout().then(function() {
+                                window.location.reload();
+                            });
+                        }
+                    });
+                }
+            } catch (err) {
+                console.warn('Firebase auth check skipped:', err);
+            }
+        })();
     </script>
 </body>
 

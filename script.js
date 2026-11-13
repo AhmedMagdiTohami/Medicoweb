@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MEDICO - Medical Educational Platform
  * JavaScript Logic
  * Author: Ahmed Magdy
@@ -159,15 +159,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentSuccessView = document.getElementById('paymentSuccessView');
 
     const courseNameToId = {
-        'علم التشريح ووظائف الأعضاء': 'anatomy',
-        'علم الأدوية والعلاجات (Pharmacology)': 'pharmacology',
-        'أساسيات الطب الباطني': 'internal-medicine',
-        'طب الطوارئ والإسعافات الأولية': 'emergency',
-        'الكيمياء الحيوية الطبية': 'biochemistry',
-        'علم الأمراض العام (Pathology)': 'pathology',
-        'مبادئ طب الأطفال الرعاية المتكاملة': 'pediatrics',
-        'الجراحة والمهارات الكلينيكية': 'surgery-skills',
-        'مادة الجراحة العامة': 'general-surgery'
+        'مادة الجراحة العامة (General Surgery)': 'general-surgery',
+        'مادة الجراحة العامة': 'general-surgery',
+        'الجراحة': 'general-surgery',
+        'مبادئ طب الأطفال والرعاية المتكاملة (Pediatrics)': 'pediatrics',
+        'مبادئ طب الأطفال': 'pediatrics',
+        'الأطفال': 'pediatrics',
+        'علم الأنسجة وبيولوجيا الخلية (Medical Histology)': 'histology',
+        'علم الأنسجة': 'histology',
+        'الهستولوجي': 'histology'
     };
 
     document.querySelectorAll('.btn-book').forEach(btn => {
