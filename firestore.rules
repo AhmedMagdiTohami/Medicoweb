@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Checks if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Checks if the logged-in user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper: Checks if the request is for the user's own document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Allow users to create their own student profile, or the admin to create any profile
+      allow create: if isOwner(userId) && (
+        request.resource.data.role == 'student' || 
+        request.resource.data.email == 'drahmedmagdieltohami@gmail.com'
+      ) || isAdmin();
+      
+      // Prevent normal users from upgrading their own role to admin
+      allow update: if isAdmin() || (
+        isOwner(userId) && 
+        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']) || resource.data.role == 'admin')
+      );
+      
+      allow delete: if isAdmin();
+    }
+
+    // 2. Activity Logs Collection
+    match /activity_logs/{logId} {
+      allow read: if isAdmin();
+      // Allow creation of logs from the client-side (for page views, logins, anonymous views, etc.)
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // 3. Course Orders Collection
+    match /course_orders/{orderId} {
+      // Users can only view their own orders; admins can view all orders
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      
+      // Users can only create orders for themselves; admins can create any
+      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || isAdmin();
+      
+      // Users can only update their own order to add a receipt/proof. They cannot modify status or activation.
+      allow update: if isAdmin() || (
+        isAuthenticated() && 
+        resource.data.userId == request.auth.uid && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.paymentStatus == resource.data.paymentStatus &&
+        request.resource.data.courseActivated == resource.data.courseActivated
+      );
+      
+      allow delete: if isAdmin();
+    }
+  }
+}

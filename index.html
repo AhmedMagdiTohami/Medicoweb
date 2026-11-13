@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="منصة MEDICO التعليمية لشرح العلوم الطبية الأكاديمية والكلينيكية بطريقة مبسطة وتطبيقات عملية بإشراف أحمد مجدي">
+    <title>MEDICO - منصة تعليمية متخصصة في شرح علوم الطب</title>
+
+    <!-- EmailJS SDK - لإرسال الإيميلات من الـ frontend مباشرةً -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <!-- Firebase SDK v9 compat (browser globals) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <script src="firebase-db.js"></script>
+
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ==========================================
+         HEADER & NAVIGATION
+         ========================================== -->
+    <header class="header" id="header">
+        <div class="container nav-container">
+            <!-- Professional Logo -->
+            <a href="#home" class="logo" aria-label="MEDICO الصفحة الرئيسية">
+                <span class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 100 100" fill="currentColor">
+                        <path
+                            d="M 50,28 C 42,20 32,13 23,13 C 12,13 10,24 13,38 C 16,50 25,61 40,71 C 29,62 19,50 16,38 C 14,26 15,16 23,16 C 32,16 42,22 50,28 Z" />
+                        <path
+                            d="M 50,28 C 58,20 68,13 77,13 C 88,13 90,24 87,38 C 82,53 66,72 42,90 C 62,72 79,54 84,38 C 87,26 86,16 77,16 C 68,16 58,22 50,28 Z" />
+                    </svg>
+                </span>
+                <span>MEDICO</span>
+            </a>
+
+            <!-- Navigation Menu -->
+            <nav class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">الرئيسية</a>
+                <a href="#about" class="nav-link">عن المنصة</a>
+                <a href="#courses" class="nav-link">الكورسات</a>
+
+                <a href="#pricing" class="nav-link">طلب عرض</a>
+                <a href="#comments" class="nav-link">آراء الطلاب</a>
+                <a href="#contact" class="nav-link">اتصل بنا</a>
+                <a href="login.html" class="nav-link btn-login-nav" id="navLoginBtn">تسجيل الدخول</a>
+                <span id="navUserGroup" style="display:none; align-items:center; gap:10px;">
+                    <a href="admin.html" id="navAdminLink" class="nav-link"
+                        style="display:none; color: var(--accent); font-weight:700; margin-left:10px;">لوحة التحكم</a>
+                    <span id="navUserName"
+                        style="color:rgba(255,255,255,0.85); font-weight:600; font-size:0.95rem;"></span>
+                    <button id="navLogoutBtn" class="nav-link btn-login-nav"
+                        style="background:rgba(239,68,68,0.8); cursor:pointer; border:none;">خروج</button>
+                </span>
+            </nav>
+
+            <!-- Mobile Menu Toggle Hamburger -->
+            <button class="mobile-toggle" id="mobileToggle" aria-label="تبديل القائمة">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         HERO SECTION (HOME)
+         ========================================== -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <!-- Hero Text Contents -->
+            <div class="hero-content reveal">
+                <div class="hero-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+                    </svg>
+                    <span>التعليم الطبي الحديث والمبسط</span>
+                </div>
+                <h1 class="hero-title">منصة <span>MEDICO</span> لتعليم العلوم الطبية الأكاديمية والكلينيكية</h1>
+                <p class="hero-description">
+                    نشرح العلوم الطبية المختلفة بطريقة مبسطة وتفاعلية مع ربطها بالتطبيقات العملية في الحياة اليومية
+                    لتجهيزك للممارسة المهنية بثقة.
+                </p>
+                <div class="hero-actions">
+                    <a href="#courses" class="btn btn-primary btn-large">استكشف الكورسات</a>
+                    <a href="https://www.youtube.com/@tamaoun-podcast" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-outline-white btn-large">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.108C19.53 3.5 12 3.5 12 3.5s-7.53 0-9.388.555A3.003 3.003 0 0 0 .502 6.163C0 8.07 0 12 0 12s0 3.93.502 5.837a3.003 3.003 0 0 0 2.11 2.108C4.47 20.5 12 20.5 12 20.5s7.53 0 9.388-.555a3.003 3.003 0 0 0 2.11-2.108C24 15.93 24 12 24 12s0-3.93-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                        <span>قناة اليوتيوب</span>
+                    </a>
+                </div>
+
+                <!-- Hero Stats -->
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">9+</span>
+                        <span class="hero-stat-label">كورس طبي</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">500+</span>
+                        <span class="hero-stat-label">طالب مسجّل</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">150</span>
+                        <span class="hero-stat-label">جنيه / كورس</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Image Wrapper -->
+            <div class="hero-image-wrapper reveal">
+                <div class="hero-img-frame">
+                    <!-- Floating Badge Top -->
+                    <div class="hero-float-badge hfb-top">
+                        <div class="hfb-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                            </svg>
+                        </div>
+                        <div class="hfb-text">
+                            <span class="hfb-label">الكورسات المتاحة</span>
+                            <span class="hfb-value">9 كورسات طبية</span>
+                        </div>
+                    </div>
+
+                    <img src="assets/images/hero.png" alt="شاشة واجهة المنصة الطبية التعليمية MEDICO" class="hero-image"
+                        width="600" height="400">
+
+                    <!-- Floating Badge Bottom -->
+                    <div class="hero-float-badge hfb-bottom">
+                        <div class="hfb-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div class="hfb-text">
+                            <span class="hfb-label">طلاب نشطون</span>
+                            <span class="hfb-value">+500 طالب</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         ABOUT US SECTION
+         ========================================== -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-title-wrapper reveal">
+                <h2 class="section-title">عن منصة MEDICO التعليمية</h2>
+                <p class="section-subtitle">شريكك في فهم وتحليل العلوم الطبية من الأساس الأكاديمي إلى التطبيق المهني
+                    السريري اليومي.</p>
+            </div>
+
+            <div class="about-grid">
+                <!-- Card 1: Academic Sciences -->
+                <div class="about-card reveal">
+                    <div class="about-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="about-card-title">العلوم الطبية الأكاديمية</h3>
+                    <p class="about-card-desc">شرح متكامل لعلوم التشريح، وظائف الأعضاء، الكيمياء الحيوية، وعلم الأمراض
+                        العام لبناء أساس معرفي صلب وقوي.</p>
+                </div>
+
+                <!-- Card 2: Clinical Sciences -->
+                <div class="about-card reveal">
+                    <div class="about-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="about-card-title">العلوم الطبية الكلينيكية</h3>
+                    <p class="about-card-desc">تقديم الممارسات الطبية والتشخيصية السريرية في الباطنة، الجراحة، الأطفال،
+                        والطوارئ بأسلوب مرئي وبسيط.</p>
+                </div>
+
+                <!-- Card 3: Practical Applications -->
+                <div class="about-card reveal">
+                    <div class="about-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3 class="about-card-title">التطبيقات الطبية العملية</h3>
+                    <p class="about-card-desc">ربط المعلومات النظرية الجافة بالحالات السريرية الواقعية وتطبيقها المباشر
+                        في الحياة اليومية وممارسة الرعاية الصحية.</p>
+                </div>
+
+                <!-- Card 4: Learning Resources -->
+                <div class="about-card reveal">
+                    <div class="about-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                    </div>
+                    <h3 class="about-card-title">المصادر والوسائل التعليمية</h3>
+                    <p class="about-card-desc">توفير مخططات بصرية، ملخصات دراسية، واختبارات دورية تفاعلية تساعد على
+                        استذكار وتثبيت المعلومات الطبية المعقدة.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         COURSES SECTION
+         ========================================== -->
+    <section class="section courses-section" id="courses">
+        <div class="container">
+            <div class="section-title-wrapper reveal">
+                <h2 class="section-title">كورساتنا الطبية المتميزة</h2>
+                <p class="section-subtitle">اختر الدورة المناسبة لمستواك الأكاديمي، وابدأ رحلتك في التميز الطبي اليوم
+                    بسعر رمزي موحد.</p>
+            </div>
+
+            <div class="courses-grid">
+                <!-- Course 1 -->
+                <div class="course-card reveal" data-course-id="anatomy">
+                    <a href="course.html?id=anatomy" class="course-img-wrapper" aria-label="عرض كورس علم التشريح ووظائف الأعضاء">
+                        <img src="assets/images/course_anatomy.png" alt="كورس علم التشريح ووظائف الأعضاء"
+                            class="course-img" width="350" height="260">
+                        <span class="course-badge">أساسي</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=anatomy">علم التشريح ووظائف الأعضاء</a></h3>
+                        <p class="course-desc">شرح تفصيلي لتراكيب أعضاء جسم الإنسان ووظائف الأجهزة الحيوية المختلفة
+                            بأحدث الصور والوسائل البصرية المساعدة.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=anatomy" class="btn btn-primary btn-book" data-course-id="anatomy">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="course-card reveal" data-course-id="pharmacology">
+                    <a href="course.html?id=pharmacology" class="course-img-wrapper" aria-label="عرض كورس علم الأدوية والعلاجات">
+                        <img src="assets/images/course_pharmacology.png" alt="كورس علم الأدوية والعلاجات"
+                            class="course-img" width="350" height="260">
+                        <span class="course-badge">كلينيكال</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=pharmacology">علم الأدوية والعلاجات (Pharmacology)</a></h3>
+                        <p class="course-desc">دراسة آليات عمل المجموعات الدوائية والتأثيرات العلاجية والجانبية مع
+                            التركيز على الاستخدام الإكلينيكي في الوصفات الطبية.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=pharmacology" class="btn btn-primary btn-book" data-course-id="pharmacology">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="course-card reveal" data-course-id="internal-medicine">
+                    <a href="course.html?id=internal-medicine" class="course-img-wrapper" aria-label="عرض كورس أساسيات الطب الباطني">
+                        <img src="assets/images/course_internal_medicine.png" alt="كورس أساسيات الطب الباطني"
+                            class="course-img" width="350" height="260">
+                        <span class="course-badge">متقدم</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=internal-medicine">أساسيات الطب الباطني</a></h3>
+                        <p class="course-desc">مدخل شامل لتشخيص وفحص الأمراض الباطنية الشائعة مثل السكري، ارتفاع الضغط،
+                            واختلال الغدد الصماء وكيفية علاجها.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=internal-medicine" class="btn btn-primary btn-book" data-course-id="internal-medicine">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 4 -->
+                <div class="course-card reveal" data-course-id="emergency">
+                    <a href="course.html?id=emergency" class="course-img-wrapper" aria-label="عرض كورس طب الطوارئ والإسعافات الأولية">
+                        <img src="assets/images/course_emergency.png" alt="كورس طب الطوارئ والإسعافات الأولية"
+                            class="course-img" width="350" height="260">
+                        <span class="course-badge">عملي</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=emergency">طب الطوارئ والإسعافات الأولية</a></h3>
+                        <p class="course-desc">دليل تدريبي تطبيقي للتعامل مع الحالات الحرجة والحوادث، الإنعاش القلبي
+                            الرئوي، ووقف النزيف بالطرق العلمية السليمة.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=emergency" class="btn btn-primary btn-book" data-course-id="emergency">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 5 -->
+                <div class="course-card reveal" data-course-id="biochemistry">
+                    <a href="course.html?id=biochemistry" class="course-img-wrapper" aria-label="عرض كورس الكيمياء الحيوية الطبية">
+                        <img src="assets/images/course_biochemistry.png" alt="كورس الكيمياء الحيوية الطبية"
+                            class="course-img" width="350" height="260">
+                        <span class="course-badge">أكاديمي</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=biochemistry">الكيمياء الحيوية الطبية</a></h3>
+                        <p class="course-desc">شرح تفاعلي للأيض ومسارات السكريات، البروتينات، والدهون في الجسم مع ربطها
+                            بالأمراض الوراثية وتفسير التحاليل المعملية.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=biochemistry" class="btn btn-primary btn-book" data-course-id="biochemistry">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 6 -->
+                <div class="course-card reveal" data-course-id="pathology">
+                    <a href="course.html?id=pathology" class="course-img-wrapper" aria-label="عرض كورس علم الأمراض العام">
+                        <img src="assets/images/course_pathology.png" alt="كورس علم الأمراض العام" class="course-img"
+                            width="350" height="260">
+                        <span class="course-badge">أساسي</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=pathology">علم الأمراض العام (Pathology)</a></h3>
+                        <p class="course-desc">فهم الأسباب والآليات المرضية وراء التغيرات النسيجية والخلوية والالتهابات
+                            والأورام الخبيثة وكيف تطرأ على جسم المريض.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=pathology" class="btn btn-primary btn-book" data-course-id="pathology">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 7 -->
+                <div class="course-card reveal" data-course-id="pediatrics">
+                    <a href="course.html?id=pediatrics" class="course-img-wrapper" aria-label="عرض كورس مبادئ طب الأطفال الرعاية المتكاملة">
+                        <img src="assets/images/course_pediatrics.svg" alt="كورس مبادئ طب الأطفال" class="course-img"
+                            onerror="this.onerror=null;this.src='assets/images/course_general.png'" width="350"
+                            height="260">
+                        <span class="course-badge">كلينيكال</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=pediatrics">مبادئ طب الأطفال الرعاية المتكاملة</a></h3>
+                        <p class="course-desc">النمو والتطور لدى الرضع والأطفال، التطعيمات الأساسية، علاج النزلات
+                            المعوية والأمراض التنفسية الشائعة.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=pediatrics" class="btn btn-primary btn-book" data-course-id="pediatrics">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 8 -->
+                <div class="course-card reveal" data-course-id="surgery-skills">
+                    <a href="course.html?id=surgery-skills" class="course-img-wrapper" aria-label="عرض كورس الجراحة والمهارات الكلينيكية">
+                        <img src="assets/images/course_surgery_skills.svg" alt="كورس الجراحة والمهارات الكلينيكية"
+                            onerror="this.onerror=null;this.src='assets/images/course_general.png'" class="course-img"
+                            width="350" height="260">
+                        <span class="course-badge">متقدم</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=surgery-skills">الجراحة والمهارات الكلينيكية</a></h3>
+                        <p class="course-desc">شرح المهارات الجراحية الأساسية، خياطة الجروح، معايير التعقيم بغرف
+                            العمليات، وقراءة الفحوصات والآشعة السريرية.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=surgery-skills" class="btn btn-primary btn-book" data-course-id="surgery-skills">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 9 - Surgery -->
+                <div class="course-card reveal" data-course-id="general-surgery">
+                    <a href="course.html?id=general-surgery" class="course-img-wrapper" aria-label="عرض كورس مادة الجراحة العامة">
+                        <img src="assets/images/course_general_surgery.svg" alt="كورس مادة الجراحة"
+                            onerror="this.onerror=null;this.src='assets/images/course_general.png'" class="course-img"
+                            width="350" height="260">
+                        <span class="course-badge">متخصص</span>
+                    </a>
+                    <div class="course-content">
+                        <h3 class="course-title"><a href="course.html?id=general-surgery">مادة الجراحة العامة</a></h3>
+                        <p class="course-desc">تغطية شاملة لمبادئ الجراحة العامة، المهارات الجراحية الأساسية، خياطة
+                            الجروح، ومعايير التعقيم داخل غرف العمليات مع ربطها بالحالات الكلينيكية.</p>
+                        <div class="course-footer">
+                            <span class="course-price">150 <span>EGP</span></span>
+                            <a href="course.html?id=general-surgery" class="btn btn-primary btn-book" data-course-id="general-surgery">احجز الآن</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==========================================
+         PAYMENT PAGE MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+        <div class="modal-card payment-modal-card">
+            <div class="modal-header payment-modal-header">
+                <div class="payment-header-content">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <h3 id="paymentModalTitle">إتمام عملية الدفع</h3>
+                </div>
+                <button class="modal-close" id="closePaymentModal" aria-label="إغلاق">&times;</button>
+            </div>
+            <div class="payment-modal-body">
+
+                <!-- Step Indicator -->
+                <div class="payment-steps">
+                    <div class="payment-step active" id="stepPayInfo">
+                        <span class="step-num">1</span>
+                        <span class="step-label">بيانات الدفع</span>
+                    </div>
+                    <div class="payment-step-line"></div>
+                    <div class="payment-step" id="stepConfirm">
+                        <span class="step-num">2</span>
+                        <span class="step-label">تأكيد الحجز</span>
+                    </div>
+                </div>
+
+                <!-- Course Summary -->
+                <div class="payment-course-summary" id="paymentCourseSummary">
+                    <div class="pcs-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="pcs-info">
+                        <span class="pcs-label">الكورس المحجوز</span>
+                        <strong id="paymentCourseName">اسم الكورس</strong>
+                    </div>
+                    <div class="pcs-price">
+                        <span id="paymentCoursePrice">200</span> EGP
+                    </div>
+                </div>
+
+                <!-- Payment Form View -->
+                <div id="paymentFormView">
+                    <!-- Payment Methods -->
+                    <div class="payment-methods-section">
+                        <h4 class="payment-section-title">اختر طريقة الدفع</h4>
+                        <div class="payment-methods-grid">
+                            <label class="payment-method-card selected" for="pm-vodafone">
+                                <input type="radio" name="payment_method" id="pm-vodafone" value="vodafone" checked>
+                                <div class="pm-icon vodafone-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.37 2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                    </svg>
+                                </div>
+                                <span>فودافون كاش</span>
+                            </label>
+                            <label class="payment-method-card" for="pm-instapay">
+                                <input type="radio" name="payment_method" id="pm-instapay" value="instapay">
+                                <div class="pm-icon instapay-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                        <line x1="1" y1="10" x2="23" y2="10" />
+                                    </svg>
+                                </div>
+                                <span>إنستاباي</span>
+                            </label>
+                            <label class="payment-method-card" for="pm-bank">
+                                <input type="radio" name="payment_method" id="pm-bank" value="bank">
+                                <div class="pm-icon bank-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <line x1="3" y1="22" x2="21" y2="22" />
+                                        <line x1="6" y1="18" x2="6" y2="11" />
+                                        <line x1="10" y1="18" x2="10" y2="11" />
+                                        <line x1="14" y1="18" x2="14" y2="11" />
+                                        <line x1="18" y1="18" x2="18" y2="11" />
+                                        <polygon points="12 2 20 7 4 7" />
+                                    </svg>
+                                </div>
+                                <span>تحويل بنكي</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Display -->
+                    <div class="payment-details-box" id="paymentDetailsBox">
+                        <h4 class="payment-section-title">بيانات الدفع</h4>
+                        <div id="vodafoneDetails" class="payment-detail-content active">
+                            <div class="payment-info-row">
+                                <span class="pi-label">رقم فودافون كاش</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">01012345678</span>
+                                    <button class="copy-btn" data-copy="01012345678" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم صاحب المحفظة</span>
+                                <span class="pi-value">أحمد مجدي</span>
+                            </div>
+                            <div class="payment-notice">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                                <span>بعد الدفع، أرسل لقطة شاشة التحويل عبر الواتساب للتفعيل الفوري.</span>
+                            </div>
+                        </div>
+                        <div id="instapayDetails" class="payment-detail-content">
+                            <div class="payment-info-row">
+                                <span class="pi-label">معرّف إنستاباي</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">AhmedMagdi@instapay</span>
+                                    <button class="copy-btn" data-copy="AhmedMagdi@instapay" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-notice">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                                <span>حوّل المبلغ عبر إنستاباي ثم أرسل إيصال التحويل عبر الواتساب.</span>
+                            </div>
+                        </div>
+                        <div id="bankDetails" class="payment-detail-content">
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم البنك</span>
+                                <span class="pi-value">بنك مصر</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">رقم الحساب</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">1234567890123456</span>
+                                    <button class="copy-btn" data-copy="1234567890123456" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم صاحب الحساب</span>
+                                <span class="pi-value">أحمد مجدي الطحاوي</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student Info Form -->
+                    <div class="payment-student-form">
+                        <h4 class="payment-section-title">بياناتك الشخصية</h4>
+                        <form id="paymentStudentForm" novalidate>
+                            <input type="hidden" id="paymentCourseHidden" value="">
+                            <input type="hidden" id="paymentPriceHidden" value="">
+                            <div class="form-group">
+                                <label for="payStudentName" class="form-label">الاسم بالكامل</label>
+                                <input type="text" id="payStudentName" class="form-input"
+                                    placeholder="اكتب اسمك الثلاثي">
+                                <span class="form-error">الرجاء إدخال اسمك الكريم (3 أحرف على الأقل).</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="payStudentPhone" class="form-label">رقم الواتساب</label>
+                                <input type="tel" id="payStudentPhone" class="form-input" placeholder="01xxxxxxxxx">
+                                <span class="form-error">الرجاء إدخال رقم هاتف مصري صحيح.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="payReceiptFile" class="form-label">تحميل صورة إيصال التحويل (إثبات
+                                    الدفع)</label>
+                                <input type="file" id="payReceiptFile" class="form-input" accept="image/*"
+                                    style="padding: 8px;">
+                                <span class="form-error">الرجاء تحميل إيصال الدفع.</span>
+                                <small style="display:block; margin-top:6px; color:rgba(255,255,255,0.5);">يمكنك تصوير
+                                    شاشة التحويل (Screenshot) ورفعها هنا.</small>
+                            </div>
+                            <button type="submit" id="payConfirmBtn" class="btn btn-primary btn-form">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                تأكيد الدفع والحجز
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Payment Success View -->
+                <div id="paymentSuccessView" style="display:none;">
+                    <div class="payment-success-animation">
+                        <div class="success-ripple"></div>
+                        <div class="success-check-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="pay-success-title">تم تأكيد حجزك بنجاح! 🎉</h3>
+                    <p class="pay-success-desc">شكراً لك! تم استلام بيانات حجزك. سيقوم فريق MEDICO بالتواصل معك خلال
+                        ساعات لتفعيل الكورس وإرسال رابط الوصول.</p>
+                    <button class="btn btn-primary" id="goToVideosBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" />
+                        </svg>
+                        عرض الكورس والفيديوهات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         VIDEOS PAGE MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="videosModal" role="dialog" aria-modal="true" aria-labelledby="videosModalTitle">
+        <div class="modal-card videos-modal-card">
+            <div class="modal-header videos-modal-header">
+                <div class="videos-header-left">
+                    <h3 id="videosModalTitle">فيديوهات الكورس</h3>
+                    <span id="videosCourseName" class="videos-course-tag">مبادئ الجراحة العامة</span>
+                </div>
+                <button class="modal-close" id="closeVideosModal" aria-label="إغلاق">&times;</button>
+            </div>
+            <div class="videos-modal-body">
+                <!-- Video Player Area -->
+                <div class="video-player-area" id="videoPlayerArea">
+                    <div class="video-player-placeholder" id="videoPlayerPlaceholder">
+                        <div class="vp-play-btn" id="vpPlayBtn">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                        </div>
+                        <div class="vp-info">
+                            <h4 id="vpCurrentTitle">اختر فيديو من القائمة</h4>
+                            <p id="vpCurrentDesc">اضغط على أي فيديو من القائمة على اليسار لبدء المشاهدة</p>
+                        </div>
+                    </div>
+                    <div class="video-locked-notice" id="videoLockedNotice" style="display:none;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <h4>هذا الفيديو مقفل</h4>
+                        <p>أكمل إجراءات الدفع للوصول لجميع الفيديوهات</p>
+                    </div>
+                </div>
+
+                <!-- Video List Sidebar -->
+                <div class="videos-sidebar" id="videosSidebar">
+                    <div class="videos-sidebar-header">
+                        <h4>محتوى الكورس</h4>
+                        <span class="videos-count" id="videosCount">0 فيديو</span>
+                    </div>
+                    <div class="videos-list" id="videosList">
+                        <!-- Dynamic video items -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         PRICING / PACKAGE SECTION
+         ========================================== -->
+    <section class="section" id="pricing">
+        <div class="container">
+            <div class="section-title-wrapper reveal">
+                <h2 class="section-title">طلب باقة الكورسات الشاملة</h2>
+                <p class="section-subtitle">احصل على وصول كامل لجميع الكورسات الأكاديمية والكلينيكية والمصادر التعليمية
+                    بسعر مخفض جداً.</p>
+            </div>
+
+            <div class="pricing-wrapper reveal">
+                <!-- Info Section -->
+                <div class="pricing-info">
+                    <h3>باقة العضوية الكاملة</h3>
+                    <p>احصل على كل المعرفة الطبية التي تحتاجها في منصة واحدة لتبسيط مشوارك التعليمي والمهني.</p>
+
+                    <div class="pricing-benefit-list">
+                        <div class="pricing-benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>دخول غير محدود لجميع الكورسات الثمانية</span>
+                        </div>
+                        <div class="pricing-benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>شهادات إتمام معتمدة بعد إنهاء الدورات</span>
+                        </div>
+                        <div class="pricing-benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>مخططات ومذكرات PDF قابلة للتحميل</span>
+                        </div>
+                        <div class="pricing-benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>تحديثات مستمرة وإضافة شروحات أسبوعية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="pricing-form-container">
+                    <form id="pricingForm" novalidate>
+                        <div class="form-group">
+                            <label for="pricingName" class="form-label">الاسم بالكامل</label>
+                            <input type="text" id="pricingName" class="form-input" placeholder="مثال: أحمد محمد علي">
+                            <span class="form-error">الرجاء إدخال الاسم كاملاً.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pricingEmail" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" id="pricingEmail" class="form-input" placeholder="name@example.com">
+                            <span class="form-error">الرجاء إدخال بريد إلكتروني صحيح.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pricingPhone" class="form-label">رقم الهاتف (واتساب)</label>
+                            <input type="tel" id="pricingPhone" class="form-input" placeholder="01xxxxxxxxx">
+                            <span class="form-error">الرجاء إدخال رقم هاتف مصري صحيح.</span>
+                        </div>
+
+                        <button type="submit" id="pricingSubmitBtn" class="btn btn-primary btn-form">اطلب العرض</button>
+                    </form>
+
+                    <!-- Success Message Alert -->
+                    <div class="form-success-alert" id="pricingSuccessAlert">
+                        <h4>تم إرسال طلبك بنجاح!</h4>
+                        <p>سوف يتواصل معك فريق الدعم الفني الخاص بالدكتور أحمد مجدي عبر الواتساب أو البريد الإلكتروني
+                            لتفعيل الباقة وتأكيد العرض المخصص لك خلال ساعات.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         COMMENTS SECTION
+         ========================================== -->
+    <section class="section comments-section" id="comments">
+        <div class="container">
+            <div class="section-title-wrapper reveal">
+                <h2 class="section-title">آراء وتعليقات الطلاب</h2>
+                <p class="section-subtitle">شاهد ما يقوله طلابنا الكرام حول تجربتهم التعليمية بالمنصة ومدى سهولة الشرح
+                    العملي.</p>
+            </div>
+
+            <div class="comments-container reveal">
+                <!-- Display Comments Card -->
+                <div class="comment-list-card">
+                    <h3>التعليقات والمراجعات</h3>
+                    <div class="comments-list-wrapper" id="commentsListWrapper">
+                        <!-- Instantly populated by script.js -->
+                    </div>
+                </div>
+
+                <!-- Add Comment Form Card -->
+                <div class="comment-form-card">
+                    <h3>أضف رأيك وتجربتك</h3>
+                    <form id="commentForm" novalidate>
+                        <div class="form-group">
+                            <label for="commentName" class="form-label">الاسم</label>
+                            <input type="text" id="commentName" class="form-input" placeholder="اكتب اسمك هنا">
+                            <span class="form-error">الاسم مطلوب.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="commentText" class="form-label">التعليق أو الملاحظة</label>
+                            <textarea id="commentText" class="form-input" rows="4"
+                                placeholder="كيف كانت تجربتك مع شروحات كورساتنا الطبية؟"></textarea>
+                            <span class="form-error">التعليق مطلوب.</span>
+                        </div>
+
+                        <button type="submit" id="commentSubmitBtn" class="btn btn-primary">إضافة تعليق</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         CONTACT US SECTION
+         ========================================== -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="section-title-wrapper reveal">
+                <h2 class="section-title">تواصل معنا الآن</h2>
+                <p class="section-subtitle">لديك استفسار حول الكورسات أو تواجه مشكلة تقنية؟ أرسل لنا رسالتك وسنجيبك في
+                    أسرع وقت.</p>
+            </div>
+
+            <div class="contact-wrapper reveal">
+                <!-- Contact Form Container -->
+                <div class="contact-form-container">
+                    <form id="contactForm" novalidate>
+                        <div class="form-group">
+                            <label for="contactName" class="form-label">الاسم بالكامل</label>
+                            <input type="text" id="contactName" class="form-input" placeholder="اسمك الكريم">
+                            <span class="form-error">الاسم مطلوب.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactEmail" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" id="contactEmail" class="form-input" placeholder="yourname@domain.com">
+                            <span class="form-error">الرجاء إدخال بريد إلكتروني صحيح.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactMessage" class="form-label">الاستفسار / السؤال</label>
+                            <textarea id="contactMessage" class="form-input" rows="5"
+                                placeholder="اكتب استفسارك بالتفصيل هنا وسوف نرد عليك..."></textarea>
+                            <span class="form-error">الرجاء كتابة الاستفسار (10 أحرف على الأقل).</span>
+                        </div>
+
+                        <button type="submit" id="contactSubmitBtn" class="btn btn-primary btn-form">إرسال
+                            الاستفسار</button>
+                    </form>
+
+                    <!-- Contact Success Message Alert -->
+                    <div class="form-success-alert" id="contactSuccessAlert">
+                        <h4>تم إرسال استفسارك بنجاح!</h4>
+                        <p>نشكرك على تواصلك معنا. سنقوم بمراجعة استفسارك والرد عليك عبر البريد الإلكتروني في غضون 24
+                            ساعة.</p>
+                    </div>
+                </div>
+
+                <!-- Contact Info Section -->
+                <div class="contact-info">
+                    <h3>معلومات الاتصال</h3>
+
+                    <div class="contact-details-list">
+                        <!-- Item 1: Owner -->
+                        <div class="contact-detail-item">
+                            <div class="contact-detail-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div class="contact-detail-text">
+                                <h4>صاحب المنصة والمشرف العلمي</h4>
+                                <p>أحمد مجدي (Ahmed Magdy)</p>
+                            </div>
+                        </div>
+
+                        <!-- Item 2: Email -->
+                        <div class="contact-detail-item">
+                            <div class="contact-detail-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div class="contact-detail-text">
+                                <h4>البريد الإلكتروني للدعم</h4>
+                                <p><a href="mailto:drahmedmagdieltohami@gmail.com"
+                                        style="color:rgba(255,255,255,0.65);text-decoration:none;">drahmedmagdieltohami@gmail.com</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Item 3: Social Podcast -->
+                        <div class="contact-detail-item">
+                            <div class="contact-detail-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+                                    </path>
+                                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                                </svg>
+                            </div>
+                            <div class="contact-detail-text">
+                                <h4>بودكاست يوتيوب للتطبيقات الطبية</h4>
+                                <p>@tamaoun-podcast</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Branding column -->
+                <div class="footer-brand">
+                    <h4>MEDICO</h4>
+                    <p>منصة رائدة تهدف إلى تبسيط العلوم الطبية وتوفير شرح أكاديمي وسريري بأسلوب عصري وتطبيقي يناسب
+                        الطلبة وممارسي الرعاية الصحية.</p>
+                    <div class="social-links">
+                        <a href="https://www.youtube.com/@tamaoun-podcast" target="_blank" rel="noopener noreferrer"
+                            class="social-icon" aria-label="YouTube Channel Link">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.108C19.53 3.5 12 3.5 12 3.5s-7.53 0-9.388.555A3.003 3.003 0 0 0 .502 6.163C0 8.07 0 12 0 12s0 3.93.502 5.837a3.003 3.003 0 0 0 2.11 2.108C4.47 20.5 12 20.5 12 20.5s7.53 0 9.388-.555a3.003 3.003 0 0 0 2.11-2.108C24 15.93 24 12 24 12s0-3.93-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon" aria-label="Facebook placeholder">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon" aria-label="Twitter X placeholder">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                                </path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon" aria-label="Instagram placeholder">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Shortcuts Link Column -->
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <div class="footer-links">
+                        <a href="#home" class="footer-link">الرئيسية</a>
+                        <a href="#about" class="footer-link">عن المنصة</a>
+                        <a href="#courses" class="footer-link">الكورسات الطبية</a>
+                        <a href="#pricing" class="footer-link">طلب باقة العضوية</a>
+                        <a href="#comments" class="footer-link">آراء الطلاب</a>
+                        <a href="#contact" class="footer-link">اتصل بنا</a>
+                    </div>
+                </div>
+
+                <!-- Help Column -->
+                <div>
+                    <h4 class="footer-title">الدعم والمساعدة</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">الأسئلة الشائعة</a>
+                        <a href="#" class="footer-link">سياسة الخصوصية</a>
+                        <a href="#" class="footer-link">شروط الاستخدام</a>
+                        <a href="#contact" class="footer-link">الدعم الفني</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom details -->
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    جميع الحقوق محفوظة &copy; <span id="currentYear">2026</span> منصة MEDICO
+                </div>
+                <div class="footer-owner">
+                    إشراف وإعداد: <a href="https://www.youtube.com/@tamaoun-podcast" target="_blank"
+                        rel="noopener noreferrer" style="color: var(--accent);">أحمد مجدي</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         BOOKING COURSE MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h3 id="modalTitle">حجز كورس طبي</h3>
+                <button class="modal-close" id="closeBookingModal" aria-label="إغلاق">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Standard Booking Form View -->
+                <form id="bookingForm" novalidate>
+                    <!-- Course details notification -->
+                    <div class="modal-course-badge">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>أنت تقوم بحجز كورس: </span>
+                        <strong id="courseBadgeName"></strong>
+                    </div>
+
+                    <!-- Hidden/Readonly Course Input -->
+                    <input type="hidden" id="bookedCourseInput" value="">
+
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="bookName" class="form-label">الاسم بالكامل</label>
+                        <input type="text" id="bookName" class="form-input" placeholder="اكتب اسمك الثلاثي">
+                        <span class="form-error">الرجاء إدخال اسمك الكريم (3 أحرف على الأقل).</span>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="form-group">
+                        <label for="bookEmail" class="form-label">البريد الإلكتروني</label>
+                        <input type="email" id="bookEmail" class="form-input" placeholder="username@mail.com">
+                        <span class="form-error">الرجاء إدخال بريد إلكتروني صحيح لتلقي بيانات الدخول.</span>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="bookPhone" class="form-label">رقم الهاتف (واتساب)</label>
+                        <input type="tel" id="bookPhone" class="form-input" placeholder="01xxxxxxxxx">
+                        <span class="form-error">الرجاء إدخال رقم هاتف مصري صحيح (11 رقم يبدأ بـ 01).</span>
+                    </div>
+
+                    <button type="submit" id="bookSubmitBtn" class="btn btn-primary btn-form">تأكيد الحجز والدفع (150
+                        EGP)</button>
+                </form>
+
+                <!-- Success Confirmation View -->
+                <div class="modal-success-view" id="bookingSuccessView">
+                    <div class="success-icon">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h4>تم تسجيل حجزك بنجاح!</h4>
+                    <p>تم إرسال تفاصيل الدفع لتسجيل الكورس عبر البريد الإلكتروني. يرجى مراجعة صندوق الرسائل الواردة أو
+                        الرسائل غير المرغوب فيها (Spam)، كما سيتواصل معك المنسق الفني عبر الواتساب قريباً.</p>
+                    <button class="btn btn-primary"
+                        onclick="document.getElementById('bookingModal').classList.remove('active'); document.body.style.overflow = '';">حسناً،
+                        إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script file -->
+    <script src="script.js" defer></script>
+    <script>
+        // Set dynamic copyright year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // ── Reveal animation fallback (runs immediately, no delay) ──────────
+        (function () {
+            function initReveal() {
+                const els = document.querySelectorAll('.reveal');
+                if ('IntersectionObserver' in window) {
+                    const obs = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (e) {
+                            if (e.isIntersecting) {
+                                e.target.classList.add('revealed');
+                                obs.unobserve(e.target);
+                            }
+                        });
+                    }, { threshold: 0.1 });
+                    els.forEach(function (el) { obs.observe(el); });
+                } else {
+                    els.forEach(function (el) { el.classList.add('revealed'); });
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initReveal);
+            } else {
+                initReveal();
+            }
+            // Extra safety: reveal everything after 1.2s regardless
+            setTimeout(function () {
+                document.querySelectorAll('.reveal').forEach(function (el) {
+                    el.classList.add('revealed');
+                });
+            }, 1200);
+        })();
+
+        // ── Header scroll class ─────────────────────────────────────────────
+        (function () {
+            var header = document.getElementById('header');
+            if (!header) return;
+            function onScroll() {
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+
+        // ── Mobile nav toggle ───────────────────────────────────────────────
+        (function () {
+            var toggle = document.getElementById('mobileToggle');
+            var menu = document.getElementById('navMenu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                toggle.classList.toggle('active');
+                menu.classList.toggle('active');
+            });
+            document.querySelectorAll('.nav-link').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    toggle.classList.remove('active');
+                    menu.classList.remove('active');
+                });
+            });
+        })();
+    </script>
+
+    <!-- Firebase Auth State Management -->
+    <script>
+        // ─── Firebase Configuration ───────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyA49NmcBO1HmTR1_j01_EzmGUJAFl6SIS0",
+            authDomain: "meproject-e1927.firebaseapp.com",
+            projectId: "meproject-e1927",
+            storageBucket: "meproject-e1927.firebasestorage.app",
+            messagingSenderId: "666133437955",
+            appId: "1:666133437955:web:6f9f05a96bd3a31ec2f836",
+            measurementId: "G-4R6BE0X1G8"
+        };
+
+        // Prevent double-initialization if SDK loaded twice
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const authInstance = firebase.auth();
+
+        // ─── Nav elements ──────────────────────────────────────────────────────────
+        const navLoginBtn = document.getElementById('navLoginBtn');
+        const navUserGroup = document.getElementById('navUserGroup');
+        const navUserName = document.getElementById('navUserName');
+        const navLogoutBtn = document.getElementById('navLogoutBtn');
+        const navAdminLink = document.getElementById('navAdminLink');
+
+        // ─── Watch auth state and update nav UI ───────────────────────────────────
+        authInstance.onAuthStateChanged(async function (user) {
+            if (user) {
+                // User is signed in
+                navLoginBtn.style.display = 'none';
+                navUserGroup.style.display = 'flex';
+                const name = user.displayName || user.email.split('@')[0];
+                navUserName.textContent = '👋 أهلاً، ' + name;
+
+                // Auto-fill booking form fields with user data
+                const bookNameEl = document.getElementById('bookName');
+                const bookEmailEl = document.getElementById('bookEmail');
+                if (bookNameEl && user.displayName) bookNameEl.value = user.displayName;
+                if (bookEmailEl && user.email) bookEmailEl.value = user.email;
+
+                // Update lastSeenAt timestamp
+                dbUpdateLastSeen();
+
+                // Check user role in Firestore
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().role === 'admin') {
+                        if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                    } else {
+                        if (navAdminLink) navAdminLink.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error('Error fetching user role:', e);
+                }
+            } else {
+                // User is signed out
+                navLoginBtn.style.display = '';
+                navUserGroup.style.display = 'none';
+                navUserName.textContent = '';
+                if (navAdminLink) navAdminLink.style.display = 'none';
+            }
+        });
+
+        // ─── Logout button handler ────────────────────────────────────────────────
+        navLogoutBtn.addEventListener('click', function () {
+            dbLogout().then(function () {
+                window.location.reload();
+            });
+        });
+    </script>
+</body>
+
+</html>

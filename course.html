@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="صفحة الكورس الطبي - منصة MEDICO التعليمية">
+    <title>MEDICO - تفاصيل الكورس</title>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <!-- Firebase SDK v9 compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <script src="firebase-db.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Course Page Styles -->
+    <link rel="stylesheet" href="course.css">
+</head>
+
+<body>
+
+    <!-- ==========================================
+         HEADER & NAVIGATION
+         ========================================== -->
+    <header class="header scrolled" id="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo" aria-label="العودة للرئيسية">
+                <span class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M 50,28 C 42,20 32,13 23,13 C 12,13 10,24 13,38 C 16,50 25,61 40,71 C 29,62 19,50 16,38 C 14,26 15,16 23,16 C 32,16 42,22 50,28 Z" />
+                        <path d="M 50,28 C 58,20 68,13 77,13 C 88,13 90,24 87,38 C 82,53 66,72 42,90 C 62,72 79,54 84,38 C 87,26 86,16 77,16 C 68,16 58,22 50,28 Z" />
+                    </svg>
+                </span>
+                <span>MEDICO</span>
+            </a>
+
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html#home" class="nav-link">الرئيسية</a>
+                <a href="index.html#courses" class="nav-link">الكورسات</a>
+                <a href="index.html#pricing" class="nav-link">طلب عرض</a>
+                <a href="index.html#contact" class="nav-link">اتصل بنا</a>
+                <a href="login.html" class="nav-link btn-login-nav" id="navLoginBtn">تسجيل الدخول</a>
+                <span id="navUserGroup" style="display:none; align-items:center; gap:10px;">
+                    <a href="admin.html" id="navAdminLink" class="nav-link" style="display:none; color: var(--accent); font-weight:700; margin-left:10px;">لوحة التحكم</a>
+                    <span id="navUserName" style="color:rgba(255,255,255,0.85); font-weight:600; font-size:0.95rem;"></span>
+                    <button id="navLogoutBtn" class="nav-link btn-login-nav" style="background:rgba(239,68,68,0.8); cursor:pointer; border:none;">خروج</button>
+                </span>
+            </nav>
+
+            <button class="mobile-toggle" id="mobileToggle" aria-label="تبديل القائمة">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         COURSE HERO / BREADCRUMB
+         ========================================== -->
+    <section class="course-hero-section" id="courseHero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" class="breadcrumb-link">الرئيسية</a>
+                <span class="breadcrumb-sep">›</span>
+                <a href="index.html#courses" class="breadcrumb-link">الكورسات</a>
+                <span class="breadcrumb-sep">›</span>
+                <span id="breadcrumbCourse" class="breadcrumb-current">الكورس</span>
+            </div>
+            <div class="course-hero-content">
+                <span class="course-hero-badge" id="courseBadge">أساسي</span>
+                <h1 class="course-hero-title" id="courseTitle">اسم الكورس</h1>
+                <p class="course-hero-desc" id="courseDesc">وصف الكورس سيظهر هنا.</p>
+                <div class="course-hero-meta">
+                    <div class="meta-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                        <span id="metaLessons">0 محاضرة</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span id="metaDuration">مدة الكورس</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        <span>إشراف: أحمد مجدي</span>
+                    </div>
+                    <div class="meta-item price-meta">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <span id="metaPrice">150 EGP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         MAIN COURSE CONTENT
+         ========================================== -->
+    <main class="course-main-layout">
+        <div class="container">
+            <div class="course-layout-grid">
+
+                <!-- ── LEFT COLUMN: Video Player + Curriculum ── -->
+                <div class="course-content-col">
+
+                    <!-- Video Player Area -->
+                    <div class="video-player-card" id="videoPlayerCard">
+                        <div class="video-player-header">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                            <span id="currentVideoTitle">اختر محاضرة للمشاهدة</span>
+                        </div>
+
+                        <!-- Video Embed Container -->
+                        <div class="video-embed-container" id="videoEmbedContainer">
+                            <!-- Placeholder shown when no video is selected -->
+                            <div class="video-placeholder" id="videoPlaceholder">
+                                <div class="placeholder-glow"></div>
+                                <div class="placeholder-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
+                                    </svg>
+                                </div>
+                                <h3>اختر محاضرة من القائمة</h3>
+                                <p>اضغط على أي محاضرة من القائمة أسفله لبدء المشاهدة الفورية</p>
+                            </div>
+
+                            <!-- iFrame for Google Drive / YouTube embed -->
+                            <iframe
+                                id="videoIframe"
+                                src=""
+                                style="display:none;"
+                                width="100%"
+                                height="100%"
+                                frameborder="0"
+                                allow="autoplay; encrypted-media; fullscreen"
+                                allowfullscreen
+                                loading="lazy"
+                                title="محاضرة الكورس"
+                            ></iframe>
+
+                            <!-- Locked overlay for non-paid users -->
+                            <div class="video-locked-overlay" id="videoLockedOverlay" style="display:none;">
+                                <div class="lock-icon">
+                                    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                </div>
+                                <h3>هذه المحاضرة مقفلة</h3>
+                                <p>سجّل حجزك وأتمّ الدفع للوصول لجميع المحاضرات</p>
+                                <button class="btn btn-primary" onclick="document.getElementById('enrollSection').scrollIntoView({behavior:'smooth'})">
+                                    احجز الآن وابدأ التعلم
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Curriculum List -->
+                    <div class="curriculum-card" id="curriculumCard">
+                        <div class="curriculum-header">
+                            <div class="curriculum-header-info">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                <h3>محتوى الكورس</h3>
+                            </div>
+                            <span class="curriculum-count" id="curriculumCount">0 محاضرة</span>
+                        </div>
+
+                        <!-- Admin Upload Controls (hidden by default, shown for admin) -->
+                        <div class="admin-upload-panel" id="adminUploadPanel" style="display:none;">
+                            <div class="admin-panel-header">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span>لوحة تحكم المشرف - إضافة محاضرة</span>
+                            </div>
+                            <div class="admin-upload-form">
+                                <div class="admin-form-row">
+                                    <input type="text" id="adminLessonTitle" class="admin-input" placeholder="عنوان المحاضرة (مثال: المحاضرة الأولى - مقدمة)">
+                                </div>
+                                <div class="admin-form-row">
+                                    <input type="text" id="adminDriveLink" class="admin-input" placeholder="رابط Google Drive (مثال: https://drive.google.com/file/d/FILE_ID/view)">
+                                </div>
+                                <div class="admin-form-row">
+                                    <input type="text" id="adminLessonDuration" class="admin-input" placeholder="المدة (مثال: 45 دقيقة)">
+                                    <select id="adminLessonAccess" class="admin-select">
+                                        <option value="free">مجاني (متاح للجميع)</option>
+                                        <option value="paid">مدفوع (يتطلب حجز)</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-primary admin-add-btn" id="adminAddLessonBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    إضافة المحاضرة
+                                </button>
+                            </div>
+                            <div class="admin-howto">
+                                <h5>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    كيفية الحصول على رابط Google Drive القابل للتضمين:
+                                </h5>
+                                <ol>
+                                    <li>ارفع الفيديو على Google Drive</li>
+                                    <li>انقر بزر الماوس الأيمن → "مشاركة"</li>
+                                    <li>غيّر الوصول إلى "أي شخص لديه الرابط"</li>
+                                    <li>انسخ رابط المشاركة والصقه هنا</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Lessons List -->
+                        <div class="lessons-list" id="lessonsList">
+                            <!-- Populated dynamically -->
+                            <div class="no-lessons-msg" id="noLessonsMsg">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                <p>لم تُضف محاضرات بعد لهذا الكورس</p>
+                                <small>سيتم إضافة المحاضرات قريباً</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Description Card -->
+                    <div class="course-desc-card">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            عن هذا الكورس
+                        </h3>
+                        <div class="desc-content" id="courseFullDesc">
+                            <p>سيظهر هنا وصف تفصيلي شامل للكورس يوضح ما ستتعلمه، والمحتوى الكامل، والفئة المستهدفة.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── RIGHT COLUMN: Enrollment Box ── -->
+                <div class="course-sidebar-col">
+                    <div class="enrollment-card" id="enrollSection">
+                        <!-- Course Thumbnail Preview -->
+                        <div class="enrollment-thumb" id="enrollThumb">
+                            <img src="" alt="صورة الكورس" id="enrollThumbImg" onerror="this.style.display='none'">
+                            <div class="enrollment-thumb-overlay">
+                                <div class="play-btn-preview">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Display -->
+                        <div class="enrollment-price-section">
+                            <div class="enrollment-price">
+                                <span id="enrollPrice">150</span>
+                                <span class="enrollment-currency">EGP</span>
+                            </div>
+                            <div class="enrollment-features">
+                                <div class="enroll-feature">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>وصول كامل لجميع المحاضرات</span>
+                                </div>
+                                <div class="enroll-feature">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>شهادة إتمام معتمدة</span>
+                                </div>
+                                <div class="enroll-feature">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>إشراف مباشر من أحمد مجدي</span>
+                                </div>
+                                <div class="enroll-feature">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>دعم فني عبر الواتساب</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Booking Form -->
+                        <div class="enrollment-form-wrapper">
+                            <h4 class="enrollment-form-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                سجّل بياناتك للحجز
+                            </h4>
+
+                            <form id="courseEnrollForm" novalidate>
+                                <input type="hidden" id="enrollCourseName" value="">
+
+                                <!-- Name -->
+                                <div class="form-group">
+                                    <label for="enrollName" class="form-label">الاسم بالكامل</label>
+                                    <div class="input-icon-wrap">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <input type="text" id="enrollName" class="form-input icon-input" placeholder="اكتب اسمك الثلاثي">
+                                    </div>
+                                    <span class="form-error">الرجاء إدخال اسمك (3 أحرف على الأقل).</span>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="form-group">
+                                    <label for="enrollEmail" class="form-label">البريد الإلكتروني</label>
+                                    <div class="input-icon-wrap">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                        <input type="email" id="enrollEmail" class="form-input icon-input" placeholder="username@mail.com">
+                                    </div>
+                                    <span class="form-error">الرجاء إدخال بريد إلكتروني صحيح.</span>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="form-group">
+                                    <label for="enrollPhone" class="form-label">رقم الهاتف (واتساب)</label>
+                                    <div class="input-icon-wrap">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.37 2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                        <input type="tel" id="enrollPhone" class="form-input icon-input" placeholder="01xxxxxxxxx">
+                                    </div>
+                                    <span class="form-error">الرجاء إدخال رقم هاتف مصري صحيح.</span>
+                                </div>
+
+                                <button type="submit" id="enrollSubmitBtn" class="btn btn-primary btn-form enroll-btn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    تأكيد الحجز (150 EGP)
+                                </button>
+                            </form>
+
+                            <!-- Success Message -->
+                            <div class="enroll-success" id="enrollSuccess" style="display:none;">
+                                <div class="enroll-success-icon">
+                                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                                <h4>تم تسجيل حجزك بنجاح! 🎉</h4>
+                                <p>سيتواصل معك فريق MEDICO خلال ساعات عبر الواتساب لإتمام عملية الدفع وتفعيل الكورس.</p>
+                                <div class="whatsapp-quick-link">
+                                    <a href="https://wa.me/201012345678" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                        تواصل عبر الواتساب
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Toggle (hidden, activated via secret click) -->
+                        <div class="admin-toggle-hint" id="adminToggleBtn" title="وضع المشرف">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Related Courses Card -->
+                    <div class="related-courses-card">
+                        <h4>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+                            كورسات أخرى
+                        </h4>
+                        <div class="related-list" id="relatedList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h4>MEDICO</h4>
+                    <p>منصة رائدة تهدف إلى تبسيط العلوم الطبية وتوفير شرح أكاديمي وسريري بأسلوب عصري.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">روابط سريعة</h4>
+                    <div class="footer-links">
+                        <a href="index.html#home" class="footer-link">الرئيسية</a>
+                        <a href="index.html#courses" class="footer-link">الكورسات</a>
+                        <a href="index.html#pricing" class="footer-link">طلب باقة</a>
+                        <a href="index.html#contact" class="footer-link">اتصل بنا</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">الدعم</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">الأسئلة الشائعة</a>
+                        <a href="#" class="footer-link">سياسة الخصوصية</a>
+                        <a href="index.html#contact" class="footer-link">الدعم الفني</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    جميع الحقوق محفوظة &copy; <span id="currentYear">2026</span> منصة MEDICO
+                </div>
+                <div class="footer-owner">
+                    إشراف: <a href="https://www.youtube.com/@tamaoun-podcast" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">أحمد مجدي</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script -->
+    <script src="course.js" defer></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    <!-- ==========================================
+         PAYMENT PAGE MODAL
+         ========================================== -->
+    <div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+        <div class="modal-card payment-modal-card">
+            <div class="modal-header payment-modal-header">
+                <div class="payment-header-content">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <h3 id="paymentModalTitle">إتمام عملية الدفع</h3>
+                </div>
+                <button class="modal-close" id="closePaymentModal" aria-label="إغلاق">&times;</button>
+            </div>
+            <div class="payment-modal-body">
+
+                <!-- Step Indicator -->
+                <div class="payment-steps">
+                    <div class="payment-step active" id="stepPayInfo">
+                        <span class="step-num">1</span>
+                        <span class="step-label">بيانات الدفع</span>
+                    </div>
+                    <div class="payment-step-line"></div>
+                    <div class="payment-step" id="stepConfirm">
+                        <span class="step-num">2</span>
+                        <span class="step-label">تأكيد الحجز</span>
+                    </div>
+                </div>
+
+                <!-- Course Summary -->
+                <div class="payment-course-summary" id="paymentCourseSummary">
+                    <div class="pcs-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div class="pcs-info">
+                        <span class="pcs-label">الكورس المحجوز</span>
+                        <strong id="paymentCourseName">اسم الكورس</strong>
+                    </div>
+                    <div class="pcs-price">
+                        <span id="paymentCoursePrice">200</span> EGP
+                    </div>
+                </div>
+
+                <!-- Payment Form View -->
+                <div id="paymentFormView">
+                    <!-- Payment Methods -->
+                    <div class="payment-methods-section">
+                        <h4 class="payment-section-title">اختر طريقة الدفع</h4>
+                        <div class="payment-methods-grid">
+                            <label class="payment-method-card selected" for="pm-vodafone">
+                                <input type="radio" name="payment_method" id="pm-vodafone" value="vodafone" checked>
+                                <div class="pm-icon vodafone-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.37 2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                </div>
+                                <span>فودافون كاش</span>
+                            </label>
+                            <label class="payment-method-card" for="pm-instapay">
+                                <input type="radio" name="payment_method" id="pm-instapay" value="instapay">
+                                <div class="pm-icon instapay-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                </div>
+                                <span>إنستاباي</span>
+                            </label>
+                            <label class="payment-method-card" for="pm-bank">
+                                <input type="radio" name="payment_method" id="pm-bank" value="bank">
+                                <div class="pm-icon bank-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+                                </div>
+                                <span>تحويل بنكي</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Display -->
+                    <div class="payment-details-box" id="paymentDetailsBox">
+                        <h4 class="payment-section-title">بيانات الدفع</h4>
+                        <div id="vodafoneDetails" class="payment-detail-content active">
+                            <div class="payment-info-row">
+                                <span class="pi-label">رقم فودافون كاش</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">01012345678</span>
+                                    <button class="copy-btn" data-copy="01012345678" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم صاحب المحفظة</span>
+                                <span class="pi-value">أحمد مجدي</span>
+                            </div>
+                            <div class="payment-notice">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <span>بعد الدفع، أرسل لقطة شاشة التحويل عبر الواتساب للتفعيل الفوري.</span>
+                            </div>
+                        </div>
+                        <div id="instapayDetails" class="payment-detail-content">
+                            <div class="payment-info-row">
+                                <span class="pi-label">معرّف إنستاباي</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">AhmedMagdi@instapay</span>
+                                    <button class="copy-btn" data-copy="AhmedMagdi@instapay" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-notice">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <span>حوّل المبلغ عبر إنستاباي ثم أرسل إيصال التحويل عبر الواتساب.</span>
+                            </div>
+                        </div>
+                        <div id="bankDetails" class="payment-detail-content">
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم البنك</span>
+                                <span class="pi-value">بنك مصر</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">رقم الحساب</span>
+                                <div class="pi-value-wrap">
+                                    <span class="pi-value">1234567890123456</span>
+                                    <button class="copy-btn" data-copy="1234567890123456" title="نسخ">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="pi-label">اسم صاحب الحساب</span>
+                                <span class="pi-value">أحمد مجدي الطحاوي</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student Info Form -->
+                    <div class="payment-student-form">
+                        <h4 class="payment-section-title">بياناتك الشخصية</h4>
+                        <form id="paymentStudentForm" novalidate>
+                            <input type="hidden" id="paymentCourseHidden" value="">
+                            <input type="hidden" id="paymentPriceHidden" value="">
+                            <div class="form-group">
+                                <label for="payStudentName" class="form-label">الاسم بالكامل</label>
+                                <input type="text" id="payStudentName" class="form-input" placeholder="اكتب اسمك الثلاثي">
+                                <span class="form-error">الرجاء إدخال اسمك الكريم (3 أحرف على الأقل).</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="payStudentPhone" class="form-label">رقم الواتساب</label>
+                                <input type="tel" id="payStudentPhone" class="form-input" placeholder="01xxxxxxxxx">
+                                <span class="form-error">الرجاء إدخال رقم هاتف مصري صحيح.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="payReceiptFile" class="form-label">تحميل صورة إيصال التحويل (إثبات الدفع)</label>
+                                <input type="file" id="payReceiptFile" class="form-input" accept="image/*" style="padding: 8px;">
+                                <span class="form-error">الرجاء تحميل إيصال الدفع.</span>
+                                <small style="display:block; margin-top:6px; color:rgba(255,255,255,0.5);">يمكنك تصوير شاشة التحويل (Screenshot) ورفعها هنا.</small>
+                            </div>
+                            <button type="submit" id="payConfirmBtn" class="btn btn-primary btn-form">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                تأكيد الدفع والحجز
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Payment Success View -->
+                <div id="paymentSuccessView" style="display:none;">
+                    <div class="payment-success-animation">
+                        <div class="success-ripple"></div>
+                        <div class="success-check-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    </div>
+                    <h3 class="pay-success-title">تم تأكيد حجزك بنجاح! 🎉</h3>
+                    <p class="pay-success-desc">شكراً لك! تم استلام بيانات حجزك. سيقوم فريق MEDICO بالتواصل معك خلال ساعات لتفعيل الكورس وإرسال رابط الوصول.</p>
+                    <button class="btn btn-primary" id="goToVideosBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                        عرض الكورس والفيديوهات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Auth State -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA49NmcBO1HmTR1_j01_EzmGUJAFl6SIS0",
+            authDomain: "meproject-e1927.firebaseapp.com",
+            projectId: "meproject-e1927",
+            storageBucket: "meproject-e1927.firebasestorage.app",
+            messagingSenderId: "666133437955",
+            appId: "1:666133437955:web:6f9f05a96bd3a31ec2f836",
+            measurementId: "G-4R6BE0X1G8"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const authInstance = firebase.auth();
+
+        const navLoginBtn  = document.getElementById('navLoginBtn');
+        const navUserGroup = document.getElementById('navUserGroup');
+        const navUserName  = document.getElementById('navUserName');
+        const navLogoutBtn = document.getElementById('navLogoutBtn');
+        const navAdminLink = document.getElementById('navAdminLink');
+
+        authInstance.onAuthStateChanged(async function(user) {
+            if (user) {
+                navLoginBtn.style.display  = 'none';
+                navUserGroup.style.display = 'flex';
+                const name = user.displayName || user.email.split('@')[0];
+                navUserName.textContent    = '👋 أهلاً، ' + name;
+                
+                // Auto-fill enroll form
+                const enrollNameEl  = document.getElementById('enrollName');
+                const enrollEmailEl = document.getElementById('enrollEmail');
+                if (enrollNameEl  && user.displayName) enrollNameEl.value  = user.displayName;
+                if (enrollEmailEl && user.email)        enrollEmailEl.value = user.email;
+
+                // Update lastSeenAt timestamp
+                dbUpdateLastSeen();
+
+                // Check user role in Firestore
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().role === 'admin') {
+                        if (navAdminLink) navAdminLink.style.display = 'inline-block';
+                    } else {
+                        if (navAdminLink) navAdminLink.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error('Error fetching user role:', e);
+                }
+            } else {
+                navLoginBtn.style.display  = '';
+                navUserGroup.style.display = 'none';
+                navUserName.textContent    = '';
+                if (navAdminLink) navAdminLink.style.display = 'none';
+            }
+        });
+
+        navLogoutBtn && navLogoutBtn.addEventListener('click', function() {
+            dbLogout().then(function() {
+                window.location.reload();
+            });
+        });
+    </script>
+</body>
+
+</html>
