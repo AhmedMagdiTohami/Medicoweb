@@ -12,51 +12,12 @@ const MIME_TYPES = {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon'
+    '.ico': 'image/x-icon',
+    '.json': 'application/json'
 };
 
 const server = http.createServer((req, res) => {
-    // Intercept Netlify serverless functions locally for testing
-    if (req.url.startsWith('/.netlify/functions/')) {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', async () => {
-            try {
-                const urlParts = req.url.split('/');
-                const functionName = urlParts[urlParts.length - 1].split('?')[0];
-                const functionPath = path.join(__dirname, 'netlify', 'functions', `${functionName}.js`);
-                
-                if (fs.existsSync(functionPath)) {
-                    // Clear require cache to enable hot-reloads during development
-                    delete require.cache[require.resolve(functionPath)];
-                    const { handler } = require(functionPath);
-                    
-                    const event = {
-                        httpMethod: req.method,
-                        headers: req.headers,
-                        body: body
-                    };
-                    
-                    const result = await handler(event, {});
-                    
-                    res.writeHead(result.statusCode, result.headers || {});
-                    res.end(result.body || '');
-                } else {
-                    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-                    res.end('Serverless Function Not Found');
-                }
-            } catch (err) {
-                console.error('Error executing local serverless function:', err);
-                res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-                res.end(`Internal Server Error: ${err.message}`);
-            }
-        });
-        return;
-    }
-
-    // Prevent directory traversal
+    // Prevent directory traversal & set default file
     let safeUrl = req.url.split('?')[0];
     if (safeUrl === '/') {
         safeUrl = '/index.html';

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
@@ -1299,18 +1299,7 @@
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        // ─── Background Notification Helper ───────────
-        async function sendNotification(email, name, uid, method) {
-            try {
-                await fetch('/.netlify/functions/login-notification', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, displayName: name || '', uid, method })
-                });
-            } catch (e) {
-                // Background task; do not block user
-            }
-        }
+
 
         // ─── SUBMIT 1: LOGIN ──────────────────────────
         document.getElementById('medicoLoginForm').addEventListener('submit', async function (e) {
@@ -1350,7 +1339,7 @@
                 if (typeof dbSyncUserLogin === 'function') {
                     await dbSyncUserLogin(user, user.displayName);
                 }
-                sendNotification(user.email, user.displayName, user.uid, 'email-password');
+                
                 window.location.href = 'index.html';
             } catch (err) {
                 showAlert(getArabicError(err.code));
@@ -1415,7 +1404,7 @@
                     });
                 }
 
-                sendNotification(user.email, nameEl.value.trim(), user.uid, 'email-signup');
+                
                 window.location.href = 'index.html';
             } catch (err) {
                 showAlert(getArabicError(err.code));
@@ -1483,7 +1472,7 @@
                 if (typeof dbSyncUserLogin === 'function') {
                     await dbSyncUserLogin(user, user.displayName);
                 }
-                sendNotification(user.email, user.displayName, user.uid, 'google-popup');
+                
                 window.location.href = 'index.html';
             } catch (err) {
                 if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
@@ -1507,7 +1496,7 @@
                     if (typeof dbSyncUserLogin === 'function') {
                         await dbSyncUserLogin(user, user.displayName);
                     }
-                    sendNotification(user.email, user.displayName, user.uid, 'google-redirect');
+                    
                     window.location.href = 'index.html';
                 }
             }).catch(e => {
